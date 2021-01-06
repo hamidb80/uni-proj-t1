@@ -60,4 +60,7 @@ Matrix multiplicate(Matrix mat1, Matrix mat2)
 
     return mat3;
 }
-// Matrix taranahade(Matrix mat) {}
+Matrix transpose(Matrix mat)
+{
+    return mat;
+}

@@ -52,9 +52,6 @@ unsigned int Number::float_length()
 }
 void Number::shift_digits_for(int shift_number)
 {
-    // TODO: what about float point ??
-
-
     unsigned int len = int_length() + float_length();
 
     if (shift_number > 0)
@@ -75,7 +72,7 @@ void Number::shift_digits_for(int shift_number)
             digits[MAX_DIGITS - (i + 1)] = digits[MAX_DIGITS - (-shift_number + i + 1)];
     }
 }
-void Number::optimize_for_printing()
+void Number::clean_float()
 {
     int should_shift_backward = 0;
     for (unsigned int i = MAX_DIGITS - 1; i > float_point_i; i--)
@@ -91,7 +88,7 @@ void Number::optimize_for_printing()
 }
 string Number::printable_string()
 {
-    optimize_for_printing();
+    clean_float();
 
     string str_num = "";
     unsigned int len = int_length() + float_length();
@@ -173,8 +170,8 @@ Number multiplicate(Number n1, Number n2)
     Number n3;
 
     unsigned int
-        n1_len = n1.int_length() + n1.float_length() ,
-        n2_len = n2.int_length() + n2.float_length() ;
+        n1_len = n1.int_length() + n1.float_length(),
+        n2_len = n2.int_length() + n2.float_length();
 
     // multipicate & put summation in result index [digits can be more than 9]
     for (unsigned int i = 0; i < n1_len; i++)

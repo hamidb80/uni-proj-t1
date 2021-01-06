@@ -32,7 +32,7 @@ public:
     bool sign; // 0 for -, 1 for +
 
     Number();
-    Number(string str_num, string _base);
+    Number(string str_num, string _base="10");
 
     // 4.0546000 => 4.0546
     void shift_digits_for(int indexes);
@@ -40,7 +40,7 @@ public:
     unsigned int int_length();
     unsigned int float_length();
 
-    void optimize_for_printing();
+    void clean_float();
     string printable_string();
 };
 

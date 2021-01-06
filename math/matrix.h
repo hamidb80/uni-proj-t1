@@ -17,4 +17,4 @@ public:
 // for both summation & subtraction
 Matrix sum_sub(Matrix mat1, Matrix mat2, bool is_sum);
 Matrix multiplicate(Matrix mat1, Matrix mat2);
-Matrix taranahade(Matrix mat1);
+Matrix transpose(Matrix mat1);
