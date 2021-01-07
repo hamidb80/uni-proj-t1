@@ -1,5 +1,6 @@
 #include "number.h"
 #include "matrix.h"
+#include <iostream>
 
 using namespace std;
 
@@ -31,13 +32,25 @@ Matrix sum_sub(Matrix mat1, Matrix mat2, bool is_sum)
     for (int y = 0; y < mat1.rows; y++)
     {
         for (int x = 0; x < mat1.columns; x++)
+        {
             if (is_sum)
                 mat3.table[y][x] = sum(mat1.table[y][x], mat2.table[y][x]);
             else
                 mat3.table[y][x] = subtract(mat1.table[y][x], mat2.table[y][x]);
+        }
     }
 
+    mat3.columns = mat1.columns;
+    mat3.rows = mat1.rows;
     return mat3;
+}
+Matrix sum(Matrix mat1, Matrix mat2)
+{
+    return sum_sub(mat1, mat2, true);
+}
+Matrix subtract(Matrix mat1, Matrix mat2)
+{
+    return sum_sub(mat1, mat2, false);
 }
 Matrix multiplicate(Matrix mat1, Matrix mat2)
 {
@@ -58,9 +71,54 @@ Matrix multiplicate(Matrix mat1, Matrix mat2)
         }
     }
 
+    mat3.rows = mat1.rows;
+    mat3.columns = mat2.columns;
     return mat3;
 }
 Matrix transpose(Matrix mat)
 {
     return mat;
+}
+
+Matrix get_matrix_from_stdin()
+{
+    short int rows, columns;
+
+    cout << "rows: ";
+    cin >> rows;
+
+    cout << "columns: ";
+    cin >> columns;
+
+    Number table[5][5];
+
+    for (short int y = 0; y < rows; y++)
+        for (short int x = 0; x < columns; x++)
+        {
+            string str_num;
+            cin >> str_num;
+
+            table[y][x] = Number(str_num);
+        }
+
+    return Matrix(rows, columns, table);
+}
+
+void show_matrix_in_stdout(Matrix &m)
+{
+    cout << '[' << endl;
+
+    for (short int y = 0; y < m.rows; y++)
+    {
+        for (short int x = 0; x < m.columns; x++)
+        {
+            if (x != 0)
+                cout << "  ";
+
+            cout << m.table[y][x].printable_string();
+        }
+        cout << endl;
+    }
+
+    cout << ']' << endl;
 }

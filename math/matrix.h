@@ -16,5 +16,10 @@ public:
 
 // for both summation & subtraction
 Matrix sum_sub(Matrix mat1, Matrix mat2, bool is_sum);
+Matrix sum(Matrix mat1, Matrix mat2);
+Matrix subtract(Matrix mat1, Matrix mat2);
 Matrix multiplicate(Matrix mat1, Matrix mat2);
 Matrix transpose(Matrix mat1);
+
+Matrix get_matrix_from_stdin();
+void show_matrix_in_stdout(Matrix &m);

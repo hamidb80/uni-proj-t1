@@ -4,12 +4,20 @@
 
 using namespace std;
 
+class MyTuple
+{
+public:
+    long int last_index;
+    string value;
+    // Tuple(int li, string val) last_index(li), value(val) {}
+};
+
 bool is_numberic_char(char ch)
 {
     return (ch >= '0' && ch <= '9') || ch == '.';
 }
 
-unsigned short int get_operator_priority(char ope)
+unsigned short int get_operator_priority(string ope)
 {
     /*
     Character   | Priority
@@ -20,35 +28,35 @@ unsigned short int get_operator_priority(char ope)
     ()          | 4
     */
 
-    switch (ope)
-    {
-    case '-':
-    case '+':
+    if (ope == "-" || ope == "+")
         return 1;
 
-    case '*':
-    case '/':
+    else if (ope == "*" || ope == "/")
         return 2;
 
-    case '^':
-    case '!':
+    else if (ope == "^" || ope == "!")
         return 3;
 
-    default:
+    else
         return 4;
-    }
 }
 
-long int get_next_operator_index(string &algebra, long int from)
+MyTuple get_next_operator(string &algebra, long int from)
 {
+    MyTuple result;
+
     for (long int i = from; i < algebra.length(); i++)
         if (!is_numberic_char(algebra[i]))
-            return algebra[i];
+        {
 
-    return '~';
+            // return algebra[i];
+            return result;
+        }
+
+    return result;
 }
 
-long int get_next_algebra_last_index(string &algebra, long int from, short int operator_priority)
+MyTuple get_next_algebra(string &algebra, long int from, short int operator_priority)
 {
 
     long int

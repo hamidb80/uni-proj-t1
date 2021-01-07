@@ -220,12 +220,16 @@ Number division(Number n1, Number n2)
 // -- checks which one is greater without respect to sign (absolute value)
 bool is_greater(Number &n1, Number &n2)
 {
+    // FIXME:
+    // sync_float_points(n1, n2);
+
     unsigned int
         n1_len = n1.int_length(),
         n2_len = n2.int_length();
 
     if (n1_len > n2_len)
         return true;
+
 
     else if (n1_len == n2_len)
         for (unsigned int i = 0; i < n1_len; i++)

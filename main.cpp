@@ -1,8 +1,10 @@
 #include <iostream>
 #include <string>
-#include "utils/test.h"
 #include "math/number.h"
-#include "math/algebra.h"
+#include "math/matrix.h"
+// #include "math/algebra.h"
+#include "utils/string.h"
+#include "utils/test.h"
 
 using namespace std;
 
@@ -74,6 +76,11 @@ void test_number()
         "999 - 991",
         subtract(Number("999"), Number("991")).printable_string(),
         "8");
+
+    test_are_equal(
+        "14.888 - 89.3",
+        subtract(Number("14.888"), Number("89.3")).printable_string(),
+        "-74.412");
 
     test_are_equal(
         "10 - 10",
@@ -156,7 +163,7 @@ void test_number()
 void test_algebra()
 {
 }
-void test_whole_all()
+void test_whole_app()
 {
     cout << "--- Fails ---" << endl;
 
@@ -191,8 +198,7 @@ void show_help()
          << "multipication  *" << endl
          << "division       /" << endl
          << "power          ^" << endl
-        //  << "factorial      !" << endl
-
+         //  << "factorial      !" << endl
 
          << ">> Functions <<" << endl
          << "log               log(base, number)" << endl
@@ -225,7 +231,7 @@ void show_help()
 
 int main()
 {
-    test_whole_all();
+    test_whole_app();
 
     while (true)
     {
@@ -234,7 +240,7 @@ int main()
             << "What you want?" << endl
             << "0. set base unit for triabgle functons "
             << "[the current base is '" << TRINGLE_FUNCTIONS_BASE << "']" << endl
-    
+
             << "1. free algebra" << endl
             << "2. matrix " << endl
             << "3. unit tranform " << endl
@@ -247,7 +253,8 @@ int main()
         if (option == 0)
         {
             // TODO: validate the input
-            cout << "available bases are: " << "DEG, RAD, GRAD" << endl;
+            cout << "available bases are: "
+                 << "DEG, RAD, GRAD" << endl;
             cout << "the default base for triangle functions would be: " << endl;
             string new_base;
             cin >> new_base;
@@ -262,6 +269,7 @@ int main()
 
             string line;
             getline(cin, line);
+            line = remove_spaces(line);
         }
         else if (option == 2)
         {
@@ -274,24 +282,31 @@ int main()
                 << "[any other number]. exit" << endl
                 << "The number of the option: ";
 
-            // enter matrix 1
+            cin >> option;
+            cin.ignore();
+
+            cout << "enter matrix info:" << endl;
+            Matrix m1 = get_matrix_from_stdin();
+            Matrix result;
 
             if (option >= 1 && option <= 3)
             {
                 // enter matrix 2
+                cout << "enter matrix info:" << endl;
+                Matrix m2 = get_matrix_from_stdin();
+
                 if (option == 1)
-                {
-                }
+                    result = sum(m1, m2);
                 else if (option == 2)
-                {
-                }
+                    result = subtract(m1, m2);
                 else
-                {
-                }
+                    result = multiplicate(m1, m2);
             }
             else if (option == 4)
             {
             }
+
+            show_matrix_in_stdout(result);
         }
         else if (option == 3)
         {
@@ -318,6 +333,7 @@ int main()
 
             string line;
             getline(cin, line);
+            line = remove_spaces(line);
         }
         else
             break;
