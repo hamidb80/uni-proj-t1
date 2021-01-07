@@ -184,9 +184,9 @@ void test_algebra()
         "15");
 
     test_are_equal(
-        "9^2",
-        get_answer("9^2").printable_string(),
-        "81");
+        "9^3-1",
+        get_answer("9^3-1").printable_string(),
+        "728");
 }
 void test_whole_app()
 {

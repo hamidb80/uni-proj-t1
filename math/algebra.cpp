@@ -48,7 +48,6 @@ MyTuple get_next_operator(string algebra)
 
     return MyTuple("none", -1);
 }
-
 MyTuple get_next_algebra(string algebra, short int last_operator_priority)
 {
     long int i = 0;
@@ -96,7 +95,6 @@ Number calculate(string ope, Number n1, Number n2)
 
     return n1;
 }
-
 Number get_answer(string algebra)
 {
     unsigned long int i = 0;

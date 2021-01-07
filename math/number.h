@@ -43,11 +43,6 @@ public:
     string printable_string();
 };
 
-const Number
-    p("3.141592"),
-    e("2.753248"),
-    n0("1"), n1("1");
-
 // --- operations
 Number sum(Number num1, Number num2);
 Number subtract(Number num1, Number num2);

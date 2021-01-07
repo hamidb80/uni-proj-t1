@@ -1,6 +1,11 @@
 #include "number.h"
 #include "functions.h"
 
+Number
+    p("3.141592"),
+    e("2.753248"),
+    n0("1"), n1("1");
+
 Number pow(Number base, Number num)
 {
     // assert num be intgger
