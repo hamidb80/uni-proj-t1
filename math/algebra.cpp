@@ -1,16 +1,15 @@
 #include <string>
 #include "algebra.h"
 #include "number.h"
+#include "functions.h"
 
 using namespace std;
 
-class MyTuple
+MyTuple::MyTuple(string _value, long int _last_index)
 {
-public:
-    long int last_index;
-    string value;
-    // Tuple(int li, string val) last_index(li), value(val) {}
-};
+    value = _value;
+    last_index = _last_index;
+}
 
 bool is_numberic_char(char ch)
 {
@@ -41,41 +40,87 @@ unsigned short int get_operator_priority(string ope)
         return 4;
 }
 
-MyTuple get_next_operator(string &algebra, long int from)
+MyTuple get_next_operator(string algebra)
 {
-    MyTuple result;
-
-    for (long int i = from; i < algebra.length(); i++)
+    for (long int i = 0; i < algebra.length(); i++)
         if (!is_numberic_char(algebra[i]))
-        {
+            return MyTuple(string(1, algebra[i]), i);
 
-            // return algebra[i];
-            return result;
-        }
-
-    return result;
+    return MyTuple("none", -1);
 }
 
-MyTuple get_next_algebra(string &algebra, long int from, short int operator_priority)
+MyTuple get_next_algebra(string algebra, short int last_operator_priority)
 {
+    long int i = 0;
 
-    long int
-        i = from + 1,
-        first_range[2] = {from, -1};
-
-    while (true)
-    {
-        if (algebra[i] == '\0')
+    for (; i < algebra.length(); i++)
+        if (!is_numberic_char(algebra[i]))
         {
+            short int operator_priority = get_operator_priority(string(1, algebra[i]));
+
+            if (operator_priority == 0 || operator_priority <= last_operator_priority)
+                return MyTuple(algebra.substr(0, i), i);
         }
+
+    return MyTuple(algebra, algebra.length());
+}
+
+Number calculate(string ope, Number n1, Number n2)
+{
+    if (ope == "+")
+        return sum(n1, n2);
+
+    else if (ope == "-")
+        return subtract(n1, n2);
+
+    else if (ope == "*")
+        return multiplicate(n1, n2);
+
+    else if (ope == "/")
+        return divide(n1, n2);
+
+    else if (ope == "^")
+        return pow(n1, n2);
+
+    else if (ope == "!")
+    {
     }
+    else
+    {
+        // throw
+    }
+
+    // else if (ope == "sin")
+    // {
+    // }
+
+    return n1;
 }
 
 Number get_answer(string algebra)
 {
-    // char ope = get_first_operator(algebra);
-    // short int pr = get_operator_priority(ope);
+    unsigned long int i = 0;
 
-    Number n;
-    return n;
+    string nextt = get_next_algebra(algebra, 5).value;
+    Number first_number(nextt);
+
+    while (i < algebra.length())
+    {
+        MyTuple opera = get_next_operator(algebra.substr(i));
+
+        if (opera.value == "none")
+            break;
+
+        short int opera_pr = get_operator_priority(opera.value);
+
+        i += opera.last_index + 1;
+
+        MyTuple second_algebra = get_next_algebra(algebra.substr(i), opera_pr);
+
+        first_number = calculate(opera.value, first_number, get_answer(second_algebra.value));
+
+        i += second_algebra.last_index;
+    }
+
+    return first_number;
 }

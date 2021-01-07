@@ -2,7 +2,7 @@
 #include <string>
 #include "math/number.h"
 #include "math/matrix.h"
-// #include "math/algebra.h"
+#include "math/algebra.h"
 #include "utils/string.h"
 #include "utils/test.h"
 
@@ -14,6 +14,7 @@ void test_number()
 {
     Number
         n1("1"),
+        n2("2"),
         n99_3("99.3"),
         n999("999"),
         n991("991"),
@@ -23,6 +24,11 @@ void test_number()
     test_are_equal(
         "999 > 999",
         is_greater(n999, n999),
+        false);
+
+        test_are_equal(
+        "2 > 2",
+        is_greater(n2, n2),
         false);
 
     test_are_equal(
@@ -162,6 +168,25 @@ void test_number()
 }
 void test_algebra()
 {
+    test_are_equal(
+        "5+3",
+        get_answer("5+3").printable_string(),
+        "8");
+
+    test_are_equal(
+        "3-5",
+        get_answer("3-5").printable_string(),
+        "-2");
+
+    test_are_equal(
+        "34*1-5*4+1",
+        get_answer("34*1-5*4+1").printable_string(),
+        "15");
+
+    test_are_equal(
+        "9^2",
+        get_answer("9^2").printable_string(),
+        "81");
 }
 void test_whole_app()
 {

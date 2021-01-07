@@ -4,5 +4,20 @@
 
 using namespace std;
 
+class MyTuple
+{
+public:
+    long int last_index;
+    string value;
+
+    MyTuple(string _value, long int _last_index);
+};
+
 bool is_numberic_char(char ch);
-Number getAnswer(string algebra);
+unsigned short int get_operator_priority(string ope);
+
+MyTuple get_next_operator(string algebra);
+MyTuple get_next_algebra(string algebra, short int last_operator_priority);
+
+Number calculate(string ope, Number &n1, Number &n2);
+Number get_answer(string algebra);

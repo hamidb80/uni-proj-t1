@@ -210,10 +210,10 @@ Number multiplicate(Number n1, Number n2)
     n3.float_point_i = MAX_DIGITS - (n1.float_length() + n2.float_length() + 1);
     return n3;
 }
-Number division(Number n1, Number n2)
+Number divide(Number n1, Number n2)
 {
     Number remain, n3;
-    return n3;
+    return n1;
 }
 
 // comparation
@@ -230,8 +230,10 @@ bool is_greater(Number &n1, Number &n2)
     if (n1_len > n2_len)
         return true;
 
+    n1_len += n1.float_length();
+    n2_len += n2.float_length();
 
-    else if (n1_len == n2_len)
+    if (n1_len == n2_len)
         for (unsigned int i = 0; i < n1_len; i++)
         {
             short int
