@@ -39,7 +39,7 @@ void show_help()
 
          << ">> Functions <<" << endl
          << "ln (natural log)  ln([number])" << endl
-         << "log               log([base], [number])" << endl
+        //  << "log               log([base], [number])" << endl
          << "absolute          abs([number])" << endl
          << "factorial         fact([number])" << endl
          << "ceil              ceil([number])" << endl
@@ -93,6 +93,7 @@ int main()
             cout << "available bases are: "
                  << "DEG, RAD, GRAD" << endl;
             cout << "the default base for triangle functions would be: " << endl;
+
             string new_base;
             cin >> new_base;
 
@@ -114,7 +115,7 @@ int main()
             }
             catch (...)
             {
-                cerr << "what?" << endl;
+                cout << "Error: this expression is not valid." << endl;
             }
         }
         else if (option == 2)
