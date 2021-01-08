@@ -1,35 +1,30 @@
 #include "number.h"
 #include "functions.h"
 
-Number
-    p("3.141592"),
-    e("2.753248"),
-    n0("1"), n1("1");
+extern Number P, E, N_0, N_1, N_10;
 
 Number pow(Number base, Number num)
 {
-    // assert num be intgger
-    // TODO: throw an error
-    if (num.float_length() == 0)
-        ;
+    num.clean_float();
+    if (num.float_length() != 0)
+        throw "power function: number must be integer";
 
-    Number res = n1, i = n1;
+    Number res = N_1, i = N_1;
 
-    for (; !is_greater(i, num); i = sum(i, n1))
+    for (; !is_greater(i, num); i = sum(i, N_1))
         res = multiplicate(res, base);
 
     return res;
 }
 Number fact(Number num)
 {
-    // assert num be intgger
-    // TODO: throw an error
-    if (num.float_length() == 0)
-        ;
+    num.clean_float();
+    if (num.float_length() != 0)
+        throw "fact function: value must be an integer";
 
-    Number res = n1, i = num;
+    Number res = N_1, i = num;
 
-    for (; is_greater(i, n0); i = subtract(i, n1))
+    for (; is_greater(i, N_0); i = subtract(i, N_1))
         res = multiplicate(res, i);
 
     return res;

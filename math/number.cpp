@@ -4,6 +4,13 @@
 
 using namespace std;
 
+// TODO: cache `int length` value
+
+Number
+    P("3.141592"),
+    E("2.753248"),
+    N_0("0"), N_1("1"), N_10("10");
+
 // constructors
 Number::Number()
 {
@@ -31,6 +38,12 @@ Number::Number(string str_num, string _base)
 
     for (unsigned int i = 0; i < str_num.length(); i++)
         digits[MAX_DIGITS - (i + 1)] = (int)str_num[str_num.length() - (1 + i)] - 48;
+}
+
+DivRes::DivRes(Number _qoutient, Number _reminder)
+{
+    qoutient = _qoutient;
+    reminder = _reminder;
 }
 
 // methods
@@ -210,25 +223,95 @@ Number multiplicate(Number n1, Number n2)
     n3.float_point_i = MAX_DIGITS - (n1.float_length() + n2.float_length() + 1);
     return n3;
 }
-Number divide(Number n1, Number n2)
+Number divide(Number dividend, Number divisor)
 {
-    Number remain, n3;
-    return n1;
+    if (are_equal(divisor, N_0))
+        throw "division by zero";
+
+    bool result_sign = dividend.sign == divisor.sign;
+    dividend.sign = divisor.sign = 1;
+
+    // delta float point length
+    long int dfl = ((long int)dividend.float_length()) - ((long int)divisor.float_length());
+    dividend.float_point_i = divisor.float_point_i = MAX_DIGITS - 1;
+
+    if (dfl > 0)
+        divisor.shift_digits_for(dfl);
+    else if (dfl < 0)
+        dividend.shift_digits_for(-dfl);
+
+    long int dividend_len = dividend.int_length(),
+             divisor_len = divisor.int_length();
+
+    Number remainder;
+    string qoutient_strnum = "";
+    short int digits_after_point = 0;
+    long int last_cut_index = MAX_DIGITS - dividend_len,
+             digits_to_cut = std::min(dividend_len, divisor_len);
+
+    while (true)
+    {
+        if (last_cut_index + digits_to_cut > MAX_DIGITS)
+        {
+            if ((are_equal(remainder, N_0) && !is_greater(divisor, dividend)) || digits_after_point == FLOAT_CLEAR_AFTER)
+                break;
+
+            if (digits_after_point == 0)
+                qoutient_strnum.append(".");
+
+            dividend = multiplicate(dividend, N_10);
+            last_cut_index -= 1;
+            digits_after_point += 1;
+        }
+
+        Number splited_dividend = sum(split_digits(dividend, last_cut_index, last_cut_index + digits_to_cut), remainder);
+
+        if (!is_greater(divisor, splited_dividend))
+        {
+            DivRes division = simple_divide(splited_dividend, divisor);
+            qoutient_strnum.append(division.qoutient.printable_string());
+
+            remainder = multiplicate(division.reminder, N_10);
+            last_cut_index += digits_to_cut;
+            digits_to_cut = 0;
+        }
+        else
+            qoutient_strnum.append("0");
+
+        digits_to_cut += 1;
+    }
+
+    Number res(qoutient_strnum);
+    res.sign = result_sign;
+
+    return res;
+}
+// 13/4 => 3, 12/4 => 3
+DivRes simple_divide(Number dividend, Number divisor)
+{
+    Number qoutient = N_0;
+
+    while (!is_greater(divisor, dividend))
+    {
+        dividend = subtract(dividend, divisor);
+        qoutient = sum(qoutient, N_1);
+    }
+
+    return DivRes(qoutient, dividend);
 }
 
 // comparation
-// -- checks which one is greater without respect to sign (absolute value)
-bool is_greater(Number &n1, Number &n2)
+// -- checks which one is greater (only respect to the absolute value)
+bool is_greater(Number n1, Number n2)
 {
-    // FIXME:
-    // sync_float_points(n1, n2);
-
     unsigned int
         n1_len = n1.int_length(),
         n2_len = n2.int_length();
 
     if (n1_len > n2_len)
         return true;
+
+    sync_float_points(n1, n2);
 
     n1_len += n1.float_length();
     n2_len += n2.float_length();
@@ -246,12 +329,39 @@ bool is_greater(Number &n1, Number &n2)
 
     return false;
 }
+bool are_equal(Number n1, Number n2)
+{
+    unsigned int
+        n1_len = n1.int_length(),
+        n2_len = n2.int_length();
+
+    if (n1_len != n2_len)
+        return false;
+
+    sync_float_points(n1, n2);
+
+    n1_len += n1.float_length();
+    n2_len += n2.float_length();
+
+    if (n1_len == n2_len)
+        for (unsigned int i = 0; i < n1_len; i++)
+        {
+            short int
+                n1_digit = n1.digits[MAX_DIGITS - (n1_len) + i],
+                n2_digit = n2.digits[MAX_DIGITS - (n2_len) + i];
+
+            if (n1_digit != n2_digit)
+                return false;
+        }
+
+    return true;
+}
 
 // other functionalities
 void sync_float_points(Number &n1, Number &n2)
 {
     // delta float length
-    unsigned int dfl = n1.float_length() - n2.float_length();
+    long int dfl = ((long int)n1.float_length()) - ((long int)n2.float_length());
 
     if (dfl > 0)
     {
@@ -263,4 +373,13 @@ void sync_float_points(Number &n1, Number &n2)
         n1.shift_digits_for(-dfl);
         n1.float_point_i -= -dfl;
     }
+}
+Number split_digits(Number n1, long int from, long int to)
+{
+    string str_num = "";
+
+    for (long int i = from; i < to; i++)
+        str_num.append(to_string(n1.digits[i]));
+
+    return Number(str_num);
 }

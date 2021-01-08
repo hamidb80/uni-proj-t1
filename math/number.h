@@ -43,14 +43,24 @@ public:
     string printable_string();
 };
 
+struct DivRes
+{
+    Number qoutient, reminder;
+    DivRes(Number _qoutient, Number _reminder);
+};
+
 // --- operations
-Number sum(Number num1, Number num2);
-Number subtract(Number num1, Number num2);
-Number multiplicate(Number num1, Number num2);
-Number divide(Number num1, Number num2);
+Number sum(Number n1, Number n2);
+Number subtract(Number n1, Number n2);
+Number multiplicate(Number n1, Number n2);
+Number divide(Number n1, Number n2);
+DivRes simple_divide(Number dividend, Number divisor);
+// Number mod(Number n1, Number n2);
 
 // --- comparation
-bool is_greater(Number &n1, Number &n2);
+bool is_greater(Number n1, Number n2);
+bool are_equal(Number n1, Number n2);
 
 // --- other functions
 void sync_float_points(Number &n1, Number &n2);
+Number split_digits(Number n1, long int from, long int to);

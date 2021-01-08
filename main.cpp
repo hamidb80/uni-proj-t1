@@ -4,199 +4,11 @@
 #include "math/matrix.h"
 #include "math/algebra.h"
 #include "utils/string.h"
-#include "utils/test.h"
+#include "test/tester.h"
 
 using namespace std;
 
 string TRINGLE_FUNCTIONS_BASE = "DEG"; // DEG, RAD, GRAD
-
-void test_number()
-{
-    Number
-        n1("1"),
-        n2("2"),
-        n99_3("99.3"),
-        n999("999"),
-        n991("991"),
-        n1000("1000");
-
-    // greater test
-    test_are_equal(
-        "999 > 999",
-        is_greater(n999, n999),
-        false);
-
-        test_are_equal(
-        "2 > 2",
-        is_greater(n2, n2),
-        false);
-
-    test_are_equal(
-        "999 > 991",
-        is_greater(n999, n991),
-        true);
-
-    test_are_equal(
-        "1000 > 999",
-        is_greater(n1000, n999),
-        true);
-
-    test_are_equal(
-        "991 > 99.3",
-        is_greater(n991, n99_3),
-        true);
-
-    // summation test
-    test_are_equal(
-        "991 + 999 ",
-        sum(Number("999"), Number("991")).printable_string(),
-        "1990");
-
-    test_are_equal(
-        "991 + 00",
-        sum(Number("999"), Number("0")).printable_string(),
-        "999");
-
-    test_are_equal(
-        "999 + 999",
-        sum(Number("999"), Number("999")).printable_string(),
-        "1998");
-
-    test_are_equal(
-        "79.64 + 1.1",
-        sum(Number("79.64"), Number("1.1")).printable_string(),
-        "80.74");
-
-    test_are_equal(
-        "5.400 + 5.11",
-        sum(Number("5.400"), Number("5.11")).printable_string(),
-        "10.51");
-
-    //"subtraction test"
-    test_are_equal(
-        "991 - 999",
-        subtract(Number("991"), Number("999")).printable_string(),
-        "-8");
-
-    test_are_equal(
-        "999 - 991",
-        subtract(Number("999"), Number("991")).printable_string(),
-        "8");
-
-    test_are_equal(
-        "14.888 - 89.3",
-        subtract(Number("14.888"), Number("89.3")).printable_string(),
-        "-74.412");
-
-    test_are_equal(
-        "10 - 10",
-        subtract(Number("10"), Number("10")).printable_string(),
-        "0");
-
-    test_are_equal(
-        "1201 - 991",
-        subtract(Number("1201"), Number("991")).printable_string(),
-        "210");
-
-    test_are_equal(
-        "79.64 - 1.1",
-        subtract(Number("79.64"), Number("1.1")).printable_string(),
-        "78.54");
-
-    //"multipicataton test"
-    test_are_equal(
-        "24 * 67",
-        multiplicate(Number("24"), Number("67")).printable_string(),
-        "1608");
-
-    test_are_equal(
-        "999 * 999",
-        multiplicate(Number("999"), Number("999")).printable_string(),
-        "998001");
-
-    test_are_equal(
-        "79.64 * 79.64",
-        multiplicate(Number("79.64"), Number("79.64")).printable_string(),
-        "6342.5296");
-
-    test_are_equal(
-        "1.1 * 1.1",
-        multiplicate(Number("1.1"), Number("1.1")).printable_string(),
-        "1.21");
-
-    test_are_equal(
-        "79.64 * 1.1",
-        multiplicate(Number("79.64"), Number("1.1")).printable_string(),
-        "87.604");
-
-    test_are_equal(
-        "79.64 * 1",
-        multiplicate(Number("79.64"), Number("1")).printable_string(),
-        "79.64");
-
-    test_are_equal(
-        "46.300 * 0",
-        multiplicate(Number("46.300"), Number("0")).printable_string(),
-        "0");
-
-    test_are_equal(
-        "46.300 * 00",
-        multiplicate(Number("46.300"), Number("00")).printable_string(),
-        "0");
-
-    test_are_equal(
-        "1 * 4.5",
-        multiplicate(Number("1"), Number("4.5")).printable_string(),
-        "4.5");
-
-    // "Number functionality"
-    string old_n1 = n1.printable_string();
-    n1.shift_digits_for(2);
-    test_are_equal(
-        old_n1 + " shift for 2 indexes",
-        n1.printable_string(),
-        "100");
-
-    string new_n1 = n1.printable_string();
-    n1.shift_digits_for(-2);
-    test_are_equal(
-        new_n1 + " shift for -2 indexes",
-        n1.printable_string(),
-        "1");
-
-    // "division test";
-}
-void test_algebra()
-{
-    test_are_equal(
-        "5+3",
-        get_answer("5+3").printable_string(),
-        "8");
-
-    test_are_equal(
-        "3-5",
-        get_answer("3-5").printable_string(),
-        "-2");
-
-    test_are_equal(
-        "34*1-5*4+1",
-        get_answer("34*1-5*4+1").printable_string(),
-        "15");
-
-    test_are_equal(
-        "9^3-1",
-        get_answer("9^3-1").printable_string(),
-        "728");
-}
-void test_whole_app()
-{
-    cout << "--- Fails ---" << endl;
-
-    test_number();
-    test_algebra();
-
-    cout << "--- APP TESTED ---" << endl;
-}
 
 void show_help()
 {
@@ -223,40 +35,40 @@ void show_help()
          << "multipication  *" << endl
          << "division       /" << endl
          << "power          ^" << endl
-         //  << "factorial      !" << endl
+         << "factorial      !" << endl
 
          << ">> Functions <<" << endl
-         << "log               log(base, number)" << endl
-         << "ln (natural log)  ln(number)" << endl
-         << "absolute          abs(number)" << endl
-         << "factorial         fact(number)" << endl
+         << "ln (natural log)  ln([number])" << endl
+         << "log               log([base], [number])" << endl
+         << "absolute          abs([number])" << endl
+         << "factorial         fact([number])" << endl
+         << "ceil              ceil([number])" << endl
+         << "floor             floor([number])" << endl
          //  << "radic             radic(base, number)" << endl
-         << "ceil              ceil()" << endl
-         << "floor             floor()" << endl
 
-         << "sin               sin()" << endl
-         << "cos               cos()" << endl
-         << "tan               tan()" << endl
-         << "cot               cot()" << endl
-         << "sinh              sinh()" << endl
-         << "cosh              cosh()" << endl
-         << "tanh              tanh()" << endl
-         << "coth              coth()" << endl
+         << "sin               sin([number])" << endl
+         << "cos               cos([number])" << endl
+         << "tan               tan([number])" << endl
+         << "cot               cot([number])" << endl
+         << "sinh              sinh([number])" << endl
+         << "cosh              cosh([number])" << endl
+         << "tanh              tanh([number])" << endl
+         << "coth              coth([number])" << endl
 
-         << "arcsin            arcsin()" << endl
-         << "arccos            arccos()" << endl
-         << "arctan            arctan()" << endl
-         << "arccot            arccot()" << endl
-         << "arcsinh           arcsinh()" << endl
-         << "arccosh           arccosh()" << endl
-         << "arctanh           arctanh()" << endl
-         << "arccoth           arccoth()" << endl
+         << "arcsin            arcsin([number])" << endl
+         << "arccos            arccos([number])" << endl
+         << "arctan            arctan([number])" << endl
+         << "arccot            arccot([number])" << endl
+         << "arcsinh           arcsinh([number])" << endl
+         << "arccosh           arccosh([number])" << endl
+         << "arctanh           arctanh([number])" << endl
+         << "arccoth           arccoth([number])" << endl
          << endl;
 }
 
 int main()
 {
-    test_whole_app();
+    test_entire_app();
 
     while (true)
     {
@@ -295,6 +107,15 @@ int main()
             string line;
             getline(cin, line);
             line = remove_spaces(line);
+
+            try
+            {
+                cout << get_answer(line).printable_string() << endl;
+            }
+            catch (...)
+            {
+                cerr << "what?" << endl;
+            }
         }
         else if (option == 2)
         {
@@ -363,6 +184,4 @@ int main()
         else
             break;
     }
-
-    cout << "-----------------" << endl;
 }
