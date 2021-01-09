@@ -4,11 +4,12 @@
 Number ln(Number number);
 Number log(Number base, Number number);
 Number pow(Number base, Number num);
-Number radical(Number base, Number num);
+Number mod(Number d1, Number divisor);
 Number fact(Number num);
 Number abs(Number num);
 Number floor(Number num);
 Number ceil(Number num);
+Number radical(Number base, Number num);
 
 Number sin(Number num);
 Number cos(Number num);

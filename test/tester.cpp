@@ -194,6 +194,11 @@ void test_number()
             "1 * 4.5",
             multiplicate(Number("1"), Number("4.5")).printable_string(),
             "4.5");
+
+        error_if_were_not_equal(
+            "17 * 0.1",
+            multiplicate(Number("17"), Number("0.1")).printable_string(),
+            "1.7");
     }
     { // division test
         error_if_were_not_equal(
@@ -280,31 +285,15 @@ void test_number()
             "10/3",
             divide(Number("10"), Number("3")).printable_string(),
             "3.33333");
-    }
-    { // mod
-        error_if_were_not_equal(
-            "10 mod 3",
-            mod(Number("10"), Number("3")).printable_string(),
-            "1");
 
         error_if_were_not_equal(
-            "2 mod 3",
-            mod(Number("2"), Number("3")).printable_string(),
-            "2");
+            "10/3",
+            divide(Number("10"), Number("3"), true).printable_string(),
+            "3");
 
         error_if_were_not_equal(
-            "999999999999999999 mod 2",
-            mod(Number("999999999999999999"), Number("2")).printable_string(),
-            "1");
-
-        error_if_were_not_equal(
-            "3.13 mod 1",
-            mod(Number("3.13"), Number("1")).printable_string(),
-            "0.13");
-
-        error_if_were_not_equal(
-            "26 mod 26",
-            mod(Number("26"), Number("2")).printable_string(),
+            "2/3",
+            divide(Number("2"), Number("3"), true).printable_string(),
             "0");
     }
     { // Number functionality
@@ -400,6 +389,57 @@ void test_functions()
             ceil(Number("-9")).printable_string(),
             "-9");
     }
+    { // mod
+        error_if_were_not_equal(
+            "10 mod 3",
+            mod(Number("10"), Number("3")).printable_string(),
+            "1");
+
+        error_if_were_not_equal(
+            "2 mod 3",
+            mod(Number("2"), Number("3")).printable_string(),
+            "2");
+
+        error_if_were_not_equal(
+            "999999999999999999 mod 2",
+            mod(Number("999999999999999999"), Number("2")).printable_string(),
+            "1");
+
+        error_if_were_not_equal(
+            "26 mod 26",
+            mod(Number("26"), Number("2")).printable_string(),
+            "0");
+
+        error_if_were_not_equal(
+            "3.13 mod 1",
+            mod(Number("3.13"), Number("1")).printable_string(),
+            "0.13");
+
+        error_if_were_not_equal(
+            "3.14 mod 3.141592",
+            mod(Number("3.14"), Number("3.141592")).printable_string(),
+            "3.14");
+
+        error_if_were_not_equal(
+            "31.45 mod 2.5",
+            mod(Number("31.45"), Number("2.5")).printable_string(),
+            "1.45");
+
+        error_if_were_not_equal(
+            "31.4 mod 3.14",
+            mod(Number("31.4"), Number("3.14")).printable_string(),
+            "0");
+
+        error_if_were_not_equal(
+            "4.71 mod 3.14",
+            mod(Number("4.71"), Number("3.14")).printable_string(),
+            "1.57");
+
+        error_if_were_not_equal(
+            "10 mod 0.3",
+            mod(Number("10"), Number("0.3")).printable_string(),
+            "0.1");
+    }
     { // sin
         error_if_were_not_equal(
             "sin(1.57)",
@@ -410,6 +450,26 @@ void test_functions()
             "sin(0.785)",
             sin(Number("0.785")).printable_string(),
             "0.7");
+
+        error_if_were_not_equal(
+            "sin(2.355)",
+            sin(Number("2.355")).printable_string(),
+            "0.7");
+
+        error_if_were_not_equal(
+            "sin(3.14)",
+            sin(Number("3.14")).printable_string(),
+            "0");
+
+        error_if_were_not_equal(
+            "sin(314)",
+            sin(Number("314")).printable_string(),
+            "0");
+
+        error_if_were_not_equal(
+            "sin(4.71)",
+            sin(Number("4.71")).printable_string(),
+            "-1");
     }
 }
 void test_algebra()

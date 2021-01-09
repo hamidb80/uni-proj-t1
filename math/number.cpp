@@ -7,7 +7,10 @@ using namespace std;
 // TODO: cache `int length` value
 
 Number
-    P("3.141592"),
+    // P ("3.141592"),
+    // P2("6.283185"),
+    P("3.14"),
+    P2("6.28"),
     E("2.753248"),
     N_0("0"), N_1("1"),
     _N_1("-1"),
@@ -49,7 +52,7 @@ DivRes::DivRes(Number _qoutient, Number _reminder)
 }
 
 // methods
-unsigned int Number::int_length()
+long int Number::int_length()
 {
     unsigned int first_non_zero_number_i = float_point_i;
     for (unsigned int i = 0; i < MAX_DIGITS && i <= float_point_i; i++)
@@ -61,7 +64,7 @@ unsigned int Number::int_length()
 
     return (MAX_DIGITS - first_non_zero_number_i) - float_length();
 }
-unsigned int Number::float_length()
+long int Number::float_length()
 {
     return MAX_DIGITS - (float_point_i + 1);
 }
@@ -87,6 +90,7 @@ void Number::shift_digits_for(int shift_number)
             digits[MAX_DIGITS - (i + 1)] = digits[MAX_DIGITS - (-shift_number + i + 1)];
     }
 }
+// 0.546000 => 0.546
 void Number::clean_float()
 {
     int should_shift_backward = 0;
@@ -118,10 +122,6 @@ string Number::printable_string()
     }
 
     return (sign == 0 ? "-" : "") + str_num;
-}
-// TODO: use it & also complete it :-|
-void Number::remove_float_after(short int num)
-{
 }
 
 // operations
@@ -255,7 +255,7 @@ Number multiplicate(Number n1, Number n2)
     n3.sign = n1.sign == n2.sign;
     return n3;
 }
-Number divide(Number dividend, Number divisor)
+Number divide(Number dividend, Number divisor, bool int_div)
 {
     if (are_equal(divisor, N_0))
         throw "division by zero";
@@ -264,7 +264,7 @@ Number divide(Number dividend, Number divisor)
     dividend.sign = divisor.sign = 1;
 
     // delta float point length
-    long int dfl = ((long int)dividend.float_length()) - ((long int)divisor.float_length());
+    long int dfl = dividend.float_length() - divisor.float_length();
     dividend.float_point_i = divisor.float_point_i = MAX_DIGITS - 1;
 
     if (dfl > 0)
@@ -285,7 +285,8 @@ Number divide(Number dividend, Number divisor)
     {
         if (last_cut_index + digits_to_cut > MAX_DIGITS)
         {
-            if ((are_equal(remainder, N_0) && !is_greater(divisor, dividend)) || digits_after_point == FLOAT_CLEAR_AFTER)
+            if ((are_equal(remainder, N_0) && !is_greater(divisor, dividend)) ||
+                digits_after_point == FLOAT_CLEAR_AFTER || int_div)
                 break;
 
             if (digits_after_point == 0)
@@ -315,60 +316,6 @@ Number divide(Number dividend, Number divisor)
 
     Number res(qoutient_strnum);
     res.sign = result_sign;
-    return res;
-}
-Number mod(Number dividend, Number divisor)
-{
-    if (are_equal(divisor, N_0))
-        throw "division by zero";
-
-    long int orginal_d_flp = dividend.float_point_i;
-
-    bool result_sign = (dividend.sign == divisor.sign);
-    dividend.sign = divisor.sign = 1;
-
-    // delta float point length
-    long int dfl = ((long int)dividend.float_length()) - ((long int)divisor.float_length());
-    dividend.float_point_i = divisor.float_point_i = MAX_DIGITS - 1;
-
-    if (dfl > 0)
-        divisor.shift_digits_for(dfl);
-    else if (dfl < 0)
-        dividend.shift_digits_for(-dfl);
-
-    long int dividend_len = dividend.int_length(),
-             divisor_len = divisor.int_length();
-
-    Number remainder;
-    long int last_cut_index = MAX_DIGITS - dividend_len,
-             digits_to_cut = std::min(dividend_len, divisor_len);
-
-    if (is_greater(divisor, dividend))
-        remainder = dividend;
-
-    else
-        while (true)
-        {
-            if (last_cut_index + digits_to_cut > MAX_DIGITS)
-                break;
-
-            remainder = multiplicate(remainder, N_10);
-            Number splited_dividend = sum(split_digits(dividend, last_cut_index, last_cut_index + digits_to_cut), remainder);
-
-            if (!is_greater(divisor, splited_dividend))
-            {
-                DivRes division = simple_divide(splited_dividend, divisor);
-                remainder = division.reminder;
-                last_cut_index += digits_to_cut;
-                digits_to_cut = 0;
-            }
-
-            digits_to_cut += 1;
-        }
-
-    Number res = remainder;
-    res.sign = result_sign;
-    res.float_point_i = orginal_d_flp;
     return res;
 }
 // 13/4 => 3, 12/4 => 3
@@ -446,7 +393,7 @@ bool are_equal(Number n1, Number n2)
 void sync_float_points(Number &n1, Number &n2)
 {
     // delta float length
-    long int dfl = ((long int)n1.float_length()) - ((long int)n2.float_length());
+    long int dfl = n1.float_length() - n2.float_length();
 
     if (dfl > 0)
     {

@@ -37,8 +37,8 @@ public:
     void shift_digits_for(int indexes);
     void remove_float_after(short int num);
 
-    unsigned int int_length();
-    unsigned int float_length();
+    long int int_length();
+    long int float_length();
 
     // 4.0546000 => 4.0546
     void clean_float();
@@ -55,10 +55,8 @@ struct DivRes
 Number sum(Number n1, Number n2);
 Number subtract(Number n1, Number n2);
 Number multiplicate(Number n1, Number n2);
-Number divide(Number dividend, Number divisor);
-Number mod(Number dividend, Number divisor);
+Number divide(Number dividend, Number divisor, bool int_div = false);
 DivRes simple_divide(Number dividend, Number divisor);
-// Number mod(Number n1, Number n2);
 
 // --- comparation
 bool is_greater(Number n1, Number n2);

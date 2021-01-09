@@ -190,7 +190,7 @@ int main()
             cout
                 // << log(Number("10"), Number("1000")).printable_string() << endl
                 << log(Number("2"), Number("16")).printable_string() << endl
-                // << sin(Number("1.5")).printable_string() << endl
+                << sin(Number("3")).printable_string() << endl
                 // << cos(Number("1.5")).printable_string() << endl
                 ;
 
