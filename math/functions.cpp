@@ -1,7 +1,10 @@
 #include "number.h"
 #include "functions.h"
 
-extern Number P, E, N_0, N_1, N_10;
+extern Number P, E, N_0, N_1, _N_1, N_2, N_10;
+const short int
+    max_hyperbolic_s = 7,
+    max_triangle_s = 5;
 
 Number pow(Number base, Number num)
 {
@@ -36,17 +39,128 @@ Number abs(Number num)
 
     return num;
 }
-// Number floor(Number num) {}
-// Number ceil(Number num) {}
+Number floor(Number num)
+{
+    // clear digits after float point
+    if (num.float_length() != 0 && num.sign == false)
+        num = subtract(num, N_1);
 
-// Number ln(Number number) {}
-// Number log(Number base, Number number) {}
-// Number radical(Number base, Number num) {}
+    // FIXME: becuase float_length() return type is unsigned integer, this probably overflows
+    num.shift_digits_for(-num.float_length());
+    num.float_point_i = MAX_DIGITS - 1;
 
-// Number sin(Number num) {}
-// Number cos(Number num) {}
-// Number tan(Number num) {}
+    return num;
+}
+Number ceil(Number num)
+{
+    // clear digits after float point
+    if (num.float_length() != 0 && num.sign == true)
+        num = sum(num, N_1);
 
-// Number sinh(Number num) {}
-// Number cosh(Number num) {}
-// Number tanh(Number num) {}
+    // FIXME: becuase float_length() return type is unsigned integer, this probably overflows
+    num.shift_digits_for(-num.float_length());
+    num.float_point_i = MAX_DIGITS - 1;
+
+    return num;
+}
+
+Number ln(Number n)
+{
+    Number _sum, top = divide(subtract(n, N_1), sum(n, N_1));
+
+    // TODO increase max
+    for (short int i = 1; i < 20; i += 2)
+    {
+        Number inum(to_string(i));
+        _sum = sum(_sum, divide(pow(top, inum), inum));
+    }
+
+    return multiplicate(N_2, _sum);
+}
+Number log(Number base, Number num)
+{
+    return divide(ln(num), ln(base));
+}
+
+// FIXME: limits for tanh coth tan cot ,...
+// TODO: use mod for this triangle functions 
+Number sin(Number rad)
+{
+    Number _sum;
+    for (short int i = 0; i < max_triangle_s; i++)
+    {
+        Number inum(to_string(i)),
+            n2_1 = sum(multiplicate(N_2, inum), N_1);
+
+        Number new_val = multiplicate(
+            divide(
+                pow(_N_1, inum), fact(n2_1)),
+            pow(rad, n2_1));
+
+        _sum = sum(_sum, new_val);
+    }
+
+    return _sum;
+}
+Number cos(Number rad)
+{
+    Number _sum;
+
+    for (short int i = 0; i < max_triangle_s; i++)
+    {
+        Number inum(to_string(i)),
+            n2 = multiplicate(N_2, inum);
+
+        _sum = sum(_sum,
+                   multiplicate(
+                       divide(
+                           pow(_N_1, inum), fact(n2)),
+                       pow(rad, n2)));
+    }
+
+    return _sum;
+}
+Number tan(Number rad)
+{
+    return divide(sin(rad), cos(rad));
+}
+Number cot(Number rad)
+{
+    return divide(cos(rad), sin(rad));
+}
+
+Number sinh(Number x)
+{
+    Number _sum;
+
+    for (int i = 0; i < max_hyperbolic_s; i++)
+    {
+        Number inum(to_string(i));
+        Number n_2_1 = sum(multiplicate(N_2, inum), N_1);
+        _sum = sum(_sum, divide(pow(x, n_2_1), fact(n_2_1)));
+    }
+
+    return _sum;
+}
+Number cosh(Number x)
+{
+    Number _sum;
+
+    for (int i = 0; i < max_hyperbolic_s; i++)
+    {
+        Number inum(to_string(i)),
+            n_2 = multiplicate(N_2, inum);
+
+        _sum = sum(_sum, divide(pow(x, n_2), fact(n_2)));
+    }
+
+    return _sum;
+}
+Number tanh(Number num)
+{
+    return divide(sinh(num), cosh(num));
+}
+Number coth(Number num)
+{
+    return divide(cosh(num), sinh(num));
+}

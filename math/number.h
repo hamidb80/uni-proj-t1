@@ -5,7 +5,7 @@ using namespace std;
 
 const unsigned short int
     FLOAT_CLEAR_AFTER = 5,
-    MAX_DIGITS = 100; // FIXME: increase this to 10e+5
+    MAX_DIGITS = 500; // FIXME: increase this to 10e+5
 
 class Number
 {
@@ -33,12 +33,14 @@ public:
     Number();
     Number(string str_num, string _base = "10");
 
-    // 4.0546000 => 4.0546
+    // digits: 12 indexes: 2 => 1200, digits: 12 indexes: -1 => 1
     void shift_digits_for(int indexes);
+    void remove_float_after(short int num);
 
     unsigned int int_length();
     unsigned int float_length();
 
+    // 4.0546000 => 4.0546
     void clean_float();
     string printable_string();
 };
@@ -53,7 +55,8 @@ struct DivRes
 Number sum(Number n1, Number n2);
 Number subtract(Number n1, Number n2);
 Number multiplicate(Number n1, Number n2);
-Number divide(Number n1, Number n2);
+Number divide(Number dividend, Number divisor);
+Number mod(Number dividend, Number divisor);
 DivRes simple_divide(Number dividend, Number divisor);
 // Number mod(Number n1, Number n2);
 

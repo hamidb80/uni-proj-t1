@@ -9,7 +9,9 @@ using namespace std;
 Number
     P("3.141592"),
     E("2.753248"),
-    N_0("0"), N_1("1"), N_10("10");
+    N_0("0"), N_1("1"),
+    _N_1("-1"),
+    N_2("2"), N_10("10");
 
 // constructors
 Number::Number()
@@ -117,47 +119,76 @@ string Number::printable_string()
 
     return (sign == 0 ? "-" : "") + str_num;
 }
+// TODO: use it & also complete it :-|
+void Number::remove_float_after(short int num)
+{
+}
 
 // operations
 Number sum(Number n1, Number n2)
 {
-    sync_float_points(n1, n2);
+    Number res;
 
     // do subtraction if their signes arn't the same
-    if (n1.sign != n2.sign)
-        return subtract(n1, n2);
+    if (n1.sign == false)
+    {
+        n1.sign = true;
 
-    Number n3;
-    n3.sign = n1.sign;
+        if (n2.sign == false)
+        {
+            n2.sign = true;
+            res = sum(n2, n1);
+            res.sign = false;
+            return res;
+        }
+        else
+            return subtract(n2, n1);
+    }
+    else if (n2.sign == false)
+    {
+        n2.sign = true;
+        return subtract(n1, n2);
+    }
+
+    sync_float_points(n1, n2);
 
     short int carry = 0;
     for (unsigned int i = 0; i < MAX_DIGITS; i++)
     {
         short int temp_sum = n1.digits[MAX_DIGITS - (i + 1)] + n2.digits[MAX_DIGITS - (i + 1)] + carry;
-        n3.digits[MAX_DIGITS - (i + 1)] = temp_sum % 10;
+        res.digits[MAX_DIGITS - (i + 1)] = temp_sum % 10;
         carry = temp_sum / 10;
     }
 
-    n3.float_point_i = n2.float_point_i;
-    return n3;
+    res.float_point_i = n2.float_point_i;
+    res.sign = n1.sign;
+    return res;
 }
 Number subtract(Number n1, Number n2)
 {
-    sync_float_points(n1, n2);
+    Number res;
 
     // do summation if their signes aren't the same
-    if (n1.sign != n2.sign)
+    if (n1.sign == false)
     {
-        n2.sign = !n2.sign;
+        n1.sign = true;
+        res = sum(n1, n2);
+        res.sign = false;
+        return res;
+    }
+    else if (n2.sign == false)
+    {
+        n2.sign = true;
         return sum(n1, n2);
     }
 
-    Number n3;
-    //n1 always contains the larger number
+    sync_float_points(n1, n2);
+
+    // n1 always contains the larger number
     if (is_greater(n2, n1))
     {
         swap(n1, n2);
-        n3.sign = 0;
+        res.sign = false;
     }
 
     short int carry = 0;
@@ -172,11 +203,11 @@ Number subtract(Number n1, Number n2)
             carry -= 1;
         }
 
-        n3.digits[MAX_DIGITS - (i + 1)] = temp_minus;
+        res.digits[MAX_DIGITS - (i + 1)] = temp_minus;
     }
 
-    n3.float_point_i = n1.float_point_i;
-    return n3;
+    res.float_point_i = n1.float_point_i;
+    return res;
 }
 Number multiplicate(Number n1, Number n2)
 {
@@ -221,6 +252,7 @@ Number multiplicate(Number n1, Number n2)
     }
 
     n3.float_point_i = MAX_DIGITS - (n1.float_length() + n2.float_length() + 1);
+    n3.sign = n1.sign == n2.sign;
     return n3;
 }
 Number divide(Number dividend, Number divisor)
@@ -228,7 +260,7 @@ Number divide(Number dividend, Number divisor)
     if (are_equal(divisor, N_0))
         throw "division by zero";
 
-    bool result_sign = dividend.sign == divisor.sign;
+    bool result_sign = (dividend.sign == divisor.sign);
     dividend.sign = divisor.sign = 1;
 
     // delta float point length
@@ -283,7 +315,60 @@ Number divide(Number dividend, Number divisor)
 
     Number res(qoutient_strnum);
     res.sign = result_sign;
+    return res;
+}
+Number mod(Number dividend, Number divisor)
+{
+    if (are_equal(divisor, N_0))
+        throw "division by zero";
 
+    long int orginal_d_flp = dividend.float_point_i;
+
+    bool result_sign = (dividend.sign == divisor.sign);
+    dividend.sign = divisor.sign = 1;
+
+    // delta float point length
+    long int dfl = ((long int)dividend.float_length()) - ((long int)divisor.float_length());
+    dividend.float_point_i = divisor.float_point_i = MAX_DIGITS - 1;
+
+    if (dfl > 0)
+        divisor.shift_digits_for(dfl);
+    else if (dfl < 0)
+        dividend.shift_digits_for(-dfl);
+
+    long int dividend_len = dividend.int_length(),
+             divisor_len = divisor.int_length();
+
+    Number remainder;
+    long int last_cut_index = MAX_DIGITS - dividend_len,
+             digits_to_cut = std::min(dividend_len, divisor_len);
+
+    if (is_greater(divisor, dividend))
+        remainder = dividend;
+
+    else
+        while (true)
+        {
+            if (last_cut_index + digits_to_cut > MAX_DIGITS)
+                break;
+
+            remainder = multiplicate(remainder, N_10);
+            Number splited_dividend = sum(split_digits(dividend, last_cut_index, last_cut_index + digits_to_cut), remainder);
+
+            if (!is_greater(divisor, splited_dividend))
+            {
+                DivRes division = simple_divide(splited_dividend, divisor);
+                remainder = division.reminder;
+                last_cut_index += digits_to_cut;
+                digits_to_cut = 0;
+            }
+
+            digits_to_cut += 1;
+        }
+
+    Number res = remainder;
+    res.sign = result_sign;
+    res.float_point_i = orginal_d_flp;
     return res;
 }
 // 13/4 => 3, 12/4 => 3
@@ -301,7 +386,7 @@ DivRes simple_divide(Number dividend, Number divisor)
 }
 
 // comparation
-// -- checks which one is greater (only respect to the absolute value)
+// -- checks which one is greater (only with respect to their absolute value)
 bool is_greater(Number n1, Number n2)
 {
     unsigned int

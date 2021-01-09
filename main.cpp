@@ -6,6 +6,8 @@
 #include "utils/string.h"
 #include "test/tester.h"
 
+#include "math/functions.h"
+
 using namespace std;
 
 string TRINGLE_FUNCTIONS_BASE = "DEG"; // DEG, RAD, GRAD
@@ -17,7 +19,7 @@ void show_help()
          << endl
 
          << ">>> FEATURES <<<" << endl
-         << "$ algebra things: -sinh(3) + log(10*(3-2)*ln(2))" << endl
+         << "$ free algebra: -sinh(3) + sin(10^(3-2)*ln(2))" << endl
          << "$ large number" << endl
          << endl
 
@@ -36,10 +38,11 @@ void show_help()
          << "division       /" << endl
          << "power          ^" << endl
          << "factorial      !" << endl
+         << endl
 
          << ">> Functions <<" << endl
          << "ln (natural log)  ln([number])" << endl
-        //  << "log               log([base], [number])" << endl
+         //  << "log               log([base], [number])" << endl
          << "absolute          abs([number])" << endl
          << "factorial         fact([number])" << endl
          << "ceil              ceil([number])" << endl
@@ -82,6 +85,7 @@ int main()
             << "2. matrix " << endl
             << "3. unit tranform " << endl
             << "4. graph " << endl
+            << "5. show help " << endl
             << "[any other number]. exit " << endl;
 
         cin >> option;
@@ -101,8 +105,6 @@ int main()
         }
         else if (option == 1)
         {
-            show_help();
-
             cout << "enter your algebra: " << endl;
 
             string line;
@@ -133,12 +135,12 @@ int main()
             cin.ignore();
 
             cout << "enter matrix info:" << endl;
-            Matrix m1 = get_matrix_from_stdin();
-            Matrix result;
+
+            Matrix m1 = get_matrix_from_stdin(),
+                   result;
 
             if (option >= 1 && option <= 3)
             {
-                // enter matrix 2
                 cout << "enter matrix info:" << endl;
                 Matrix m2 = get_matrix_from_stdin();
 
@@ -150,8 +152,7 @@ int main()
                     result = multiplicate(m1, m2);
             }
             else if (option == 4)
-            {
-            }
+                result = transpose(m1);
 
             show_matrix_in_stdout(result);
         }
@@ -182,7 +183,18 @@ int main()
             getline(cin, line);
             line = remove_spaces(line);
         }
+        else if (option == 5)
+            show_help();
         else
+        {
+            cout
+                // << log(Number("10"), Number("1000")).printable_string() << endl
+                << log(Number("2"), Number("16")).printable_string() << endl
+                // << sin(Number("1.5")).printable_string() << endl
+                // << cos(Number("1.5")).printable_string() << endl
+                ;
+
             break;
+        }
     }
 }

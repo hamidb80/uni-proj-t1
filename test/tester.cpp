@@ -2,6 +2,7 @@
 #include <string>
 #include "../utils/test.h"
 #include "../math/number.h"
+#include "../math/functions.h"
 #include "../math/matrix.h"
 #include "../math/algebra.h"
 
@@ -280,6 +281,32 @@ void test_number()
             divide(Number("10"), Number("3")).printable_string(),
             "3.33333");
     }
+    { // mod
+        error_if_were_not_equal(
+            "10 mod 3",
+            mod(Number("10"), Number("3")).printable_string(),
+            "1");
+
+        error_if_were_not_equal(
+            "2 mod 3",
+            mod(Number("2"), Number("3")).printable_string(),
+            "2");
+
+        error_if_were_not_equal(
+            "999999999999999999 mod 2",
+            mod(Number("999999999999999999"), Number("2")).printable_string(),
+            "1");
+
+        error_if_were_not_equal(
+            "3.13 mod 1",
+            mod(Number("3.13"), Number("1")).printable_string(),
+            "0.13");
+
+        error_if_were_not_equal(
+            "26 mod 26",
+            mod(Number("26"), Number("2")).printable_string(),
+            "0");
+    }
     { // Number functionality
 
         Number num("45");
@@ -302,6 +329,89 @@ void test_number()
     }
 }
 void test_matrix() {}
+void test_functions()
+{
+    { // power
+        error_if_were_not_equal(
+            "8^5",
+            pow(Number("8"), Number("5")).printable_string(),
+            "32768");
+
+        error_if_were_not_equal(
+            "(-2)^5",
+            pow(Number("-2"), Number("5")).printable_string(),
+            "-32");
+    }
+    { // fact
+        error_if_were_not_equal(
+            "8!",
+            fact(Number("8")).printable_string(),
+            "40320");
+    }
+    { // floor
+        error_if_were_not_equal(
+            "floor -8",
+            abs(Number("-8")).printable_string(),
+            "8");
+
+        error_if_were_not_equal(
+            "floor 8",
+            abs(Number("8")).printable_string(),
+            "8");
+
+        error_if_were_not_equal(
+            "floor 8.5",
+            floor(Number("8.5")).printable_string(),
+            "8");
+
+        error_if_were_not_equal(
+            "floor 8",
+            floor(Number("8")).printable_string(),
+            "8");
+
+        error_if_were_not_equal(
+            "floor -8.5",
+            floor(Number("-8.5")).printable_string(),
+            "-9");
+    }
+    { // ceil
+        error_if_were_not_equal(
+            "ceil -9",
+            floor(Number("-9")).printable_string(),
+            "-9");
+
+        error_if_were_not_equal(
+            "ceil 8.5",
+            ceil(Number("8.5")).printable_string(),
+            "9");
+
+        error_if_were_not_equal(
+            "ceil 8",
+            ceil(Number("8")).printable_string(),
+            "8");
+
+        error_if_were_not_equal(
+            "ceil -8.5",
+            ceil(Number("-8.5")).printable_string(),
+            "-8");
+
+        error_if_were_not_equal(
+            "ceil -9",
+            ceil(Number("-9")).printable_string(),
+            "-9");
+    }
+    { // sin
+        error_if_were_not_equal(
+            "sin(1.57)",
+            sin(Number("1.57")).printable_string(),
+            "1");
+
+        error_if_were_not_equal(
+            "sin(0.785)",
+            sin(Number("0.785")).printable_string(),
+            "0.7");
+    }
+}
 void test_algebra()
 {
     error_if_were_not_equal(
@@ -340,6 +450,7 @@ void test_entire_app()
 
     test_matrix();
     test_number();
+    test_functions();
     test_algebra();
 
     cout << "--- APP TESTED ---" << endl;

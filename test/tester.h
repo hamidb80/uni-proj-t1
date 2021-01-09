@@ -1,4 +1,3 @@
-void test_number();
-void test_algebra();
+#pragma once
 
 void test_entire_app();
