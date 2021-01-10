@@ -81,7 +81,7 @@ Matrix transpose(Matrix m)
 
     for (short int y = 0; y < m.rows; y++)
         for (short int x = 0; x < m.columns; x++)
-            res.table[y][x] = m.table[x][y];
+            res.table[x][y] = m.table[y][x];
 
     return res;
 }

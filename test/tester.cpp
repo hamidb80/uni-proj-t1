@@ -534,7 +534,7 @@ void test_algebra()
             get_next_algebra("6*1^(43+4)-12", 1).value,
             "6*1^(43+4)");
     }
-    { // e2e
+    { // get_answer
         error_if_were_not_equal(
             "5+3",
             get_answer("5+3").printable_string(),
@@ -584,7 +584,16 @@ void test_algebra()
             "5*3+(7*2+3*(3.5*9)-(-3))/7",
             get_answer("5*3+(7*2+3*(3.5*9)-(-3))/7").printable_string(),
             "30.92857");
-            
+
+        error_if_were_not_equal(
+            "(2)+(1)*(5)*(-3)-(-(-4))",
+            get_answer("(2)+(1)*(5)*(-3)-(-(-4))").printable_string(),
+            "-17");
+
+        error_if_were_not_equal(
+            "((2)+(1))/(5)-((-3)-(-(-4)))",
+            get_answer("((2)+(1))/(5)-((-3)-(-(-4)))").printable_string(),
+            "7.6");
     }
 }
 void test_entire_app()

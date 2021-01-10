@@ -11,27 +11,32 @@ MyTuple::MyTuple(string _value, long int _last_index)
     last_index = _last_index;
 }
 
+bool is_alphabet(char ch){
+    return (ch >= 'a' && ch <= 'z');
+}
 bool is_sign(char ch)
 {
     return (ch == '-' || ch == '+');
 }
-bool is_numberic_char(char ch)
+bool is_numberic(char ch)
 {
     return (ch >= '0' && ch <= '9') || ch == '.';
 }
 bool is_pure_number(string algebra)
 {
     for (unsigned i = 0; i < algebra.length(); i++)
-        if (!is_numberic_char(algebra[i]))
+        if (!is_numberic(algebra[i]))
             return false;
 
     return true;
 }
 
+// ".ds." => "ds"
 string remove_around(string str)
 {
     return str.substr(1, str.length() - 2);
 }
+// "43+2" => "43+2", "(2+2)" => "2+2"
 string remove_pars(string str)
 {
     if (str[0] == '(' && str[str.length() - 1] == ')')
@@ -104,6 +109,9 @@ Number calculate(string ope, Number n1)
     throw "not matched";
 }
 
+// get_arguments log(2, 4*3)
+// function
+
 unsigned short int get_operator_priority(string ope)
 {
     /*
@@ -128,7 +136,7 @@ unsigned short int get_operator_priority(string ope)
 MyTuple get_next_operator(string algebra)
 {
     for (long int i = 0; i < algebra.length(); i++)
-        if (!is_numberic_char(algebra[i]))
+        if (!is_numberic(algebra[i]))
             return MyTuple(string(1, algebra[i]), i);
 
     return MyTuple("none", -1);
@@ -137,8 +145,11 @@ MyTuple get_next_operator(string algebra)
 MyTuple get_next_algebra(string algebra, short int last_operator_priority, bool is_first)
 {
     long int i = 0;
-    unsigned int depth = 0;
+    unsigned int
+        depth = 0, // depth of pars
+        pars = 0; // how many pars exists in this expression (algebra)?
     bool matched = false;
+    string scope = "";
 
     for (; i < algebra.length(); i++)
     {
@@ -149,14 +160,17 @@ MyTuple get_next_algebra(string algebra, short int last_operator_priority, bool 
         {
             depth--;
 
-            if (depth < 0)
+            if (depth == 0)
+                pars++;
+
+            else if (depth < 0)
             {
                 throw 5;
                 // throw "depth error";
             }
         }
 
-        else if (!is_numberic_char(algebra[i]) && depth == 0)
+        else if (!is_numberic(algebra[i]) && depth == 0)
         {
             if (matched == false)
             {
@@ -175,9 +189,7 @@ MyTuple get_next_algebra(string algebra, short int last_operator_priority, bool 
             short int operator_priority = get_operator_priority(string(1, algebra[i]));
 
             if (operator_priority <= last_operator_priority)
-            {
-                return MyTuple(remove_pars(algebra.substr(0, i)), i - 1);
-            }
+                break;
         }
         else
             matched = true;
@@ -186,7 +198,8 @@ MyTuple get_next_algebra(string algebra, short int last_operator_priority, bool 
     if (depth != 0)
         throw "depth error";
 
-    return MyTuple(remove_pars(algebra), algebra.length());
+    scope = algebra.substr(0, i);
+    return MyTuple((pars == 1 ? remove_pars(scope) : scope), i - 1);
 }
 
 Number get_answer(string algebra)
