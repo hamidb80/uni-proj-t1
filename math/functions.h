@@ -15,6 +15,9 @@ Number sin(Number num);
 Number cos(Number num);
 Number tan(Number num);
 Number cot(Number num);
+Number sec(Number num);
+Number csc(Number num);
+
 
 Number sinh(Number num);
 Number cosh(Number num);

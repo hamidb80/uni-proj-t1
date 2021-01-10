@@ -5,13 +5,17 @@
 
 using namespace std;
 
-MyTuple::MyTuple(string _value, long int _last_index)
+extern Number E, P;
+
+MyTuple::MyTuple(string _value, long int _last_index, string fname)
 {
     value = _value;
     last_index = _last_index;
+    func_name = fname;
 }
 
-bool is_alphabet(char ch){
+bool is_alphabet(char ch)
+{
     return (ch >= 'a' && ch <= 'z');
 }
 bool is_sign(char ch)
@@ -36,7 +40,7 @@ string remove_around(string str)
 {
     return str.substr(1, str.length() - 2);
 }
-// "43+2" => "43+2", "(2+2)" => "2+2"
+// "43+(2)" => "43+(2)", "(2+2)" => "2+2"
 string remove_pars(string str)
 {
     if (str[0] == '(' && str[str.length() - 1] == ')')
@@ -45,7 +49,17 @@ string remove_pars(string str)
     return str;
 }
 
-Number calculate(string ope, Number n1, Number n2)
+// TODO:
+Number get_var(string var_name)
+{
+    if (var_name == "e")
+        return E;
+    else if (var_name == "p")
+        return P;
+
+    throw "not match";
+}
+Number calculate(string ope, Number &n1, Number &n2)
 {
     if (ope == "+")
         return sum(n1, n2);
@@ -63,64 +77,55 @@ Number calculate(string ope, Number n1, Number n2)
         return pow(n1, n2);
 
     // else if (ope == "log")
-    // {
-    // }
+    // return log(n1);
 
     throw "not matched";
 }
-Number calculate(string ope, Number n1)
+Number calculate(string ope, Number &n1)
 {
     if (ope == "fact")
-    {
-    }
+        return fact(n1);
+    if (ope == "abs")
+        return abs(n1);
     else if (ope == "floor")
-    {
-    }
+        return floor(n1);
     else if (ope == "ceil")
-    {
-    }
+        return ceil(n1);
 
     else if (ope == "sin")
-    {
-    }
+        return sin(n1);
     else if (ope == "cos")
-    {
-    }
+        return cos(n1);
+    else if (ope == "sec")
+        return sec(n1);
+    else if (ope == "csc")
+        return csc(n1);
     else if (ope == "tan")
-    {
-    }
+        return tan(n1);
     else if (ope == "cot")
-    {
-    }
+        return cot(n1);
 
     else if (ope == "sinh")
-    {
-    }
+        return sinh(n1);
     else if (ope == "cosh")
-    {
-    }
+        return cosh(n1);
     else if (ope == "tanh")
-    {
-    }
+        return tanh(n1);
     else if (ope == "coth")
-    {
-    }
+        return coth(n1);
 
     throw "not matched";
 }
 
 // get_arguments log(2, 4*3)
 // function
-
 unsigned short int get_operator_priority(string ope)
 {
-    /*
-    Character   | Priority
-    - +         | 1
-    * /         | 2
-    ^ ! func()  | 3
-    ()          | 4
-    */
+    /* Character   | Priority
+       - +         | 1
+       * /         | 2
+       ^ ! func()  | 3
+       ()          | 4 */
 
     if (ope == "-" || ope == "+")
         return 1;
@@ -147,9 +152,9 @@ MyTuple get_next_algebra(string algebra, short int last_operator_priority, bool 
     long int i = 0;
     unsigned int
         depth = 0, // depth of pars
-        pars = 0; // how many pars exists in this expression (algebra)?
+        pars = 0;  // how many pars exists in this expression (algebra)?
     bool matched = false;
-    string scope = "";
+    string funcname = "", scope = "";
 
     for (; i < algebra.length(); i++)
     {
@@ -164,10 +169,7 @@ MyTuple get_next_algebra(string algebra, short int last_operator_priority, bool 
                 pars++;
 
             else if (depth < 0)
-            {
-                throw 5;
-                // throw "depth error";
-            }
+                throw "depth error";
         }
 
         else if (!is_numberic(algebra[i]) && depth == 0)
@@ -182,14 +184,18 @@ MyTuple get_next_algebra(string algebra, short int last_operator_priority, bool 
 
                     continue;
                 }
+                else if (is_alphabet(algebra[i]))
+                    funcname += algebra[i];
                 else
                     throw "err";
             }
+            else
+            {
+                short int operator_priority = get_operator_priority(string(1, algebra[i]));
 
-            short int operator_priority = get_operator_priority(string(1, algebra[i]));
-
-            if (operator_priority <= last_operator_priority)
-                break;
+                if (operator_priority <= last_operator_priority)
+                    break;
+            }
         }
         else
             matched = true;
@@ -198,14 +204,28 @@ MyTuple get_next_algebra(string algebra, short int last_operator_priority, bool 
     if (depth != 0)
         throw "depth error";
 
-    scope = algebra.substr(0, i);
-    return MyTuple((pars == 1 ? remove_pars(scope) : scope), i - 1);
+    // --------
+    bool is_func_call = (pars == 1 && funcname != "" && algebra[algebra.length() - 1] == ')');
+
+    if (is_func_call)
+        scope = algebra.substr(funcname.length(), i - funcname.length());
+    else
+    {
+        scope = algebra.substr(0, i);
+        funcname = "";
+    }
+
+    return MyTuple((pars == 1 ? remove_pars(scope) : scope), i - 1, funcname);
 }
 
+// TODO: multi argument
 Number get_answer(string algebra)
 {
     MyTuple first_algebra = get_next_algebra(algebra, 4, true);
     Number first_number = (is_pure_number(first_algebra.value) ? Number(first_algebra.value) : get_answer(first_algebra.value));
+
+    if (first_algebra.func_name != "")
+        first_number = calculate(first_algebra.func_name, first_number);
 
     unsigned long int i = first_algebra.last_index + 1;
 
@@ -218,8 +238,12 @@ Number get_answer(string algebra)
 
         i += opera.last_index + 1;
         MyTuple second_algebra = get_next_algebra(algebra.substr(i), get_operator_priority(opera.value));
+        Number second_number = get_answer(second_algebra.value);
 
-        first_number = calculate(opera.value, first_number, get_answer(second_algebra.value));
+        if (second_algebra.func_name != "")
+            second_number = calculate(second_algebra.func_name, second_number);
+
+        first_number = calculate(opera.value, first_number, second_number);
         i += second_algebra.last_index + 1;
     }
 

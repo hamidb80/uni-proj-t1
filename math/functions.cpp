@@ -124,6 +124,7 @@ Number sin(Number rad)
 Number cos(Number rad)
 {
     rad = mod(rad, P2);
+    // TODO:
     // bool sign = !is_greater(rad, P);
     // rad = mod(rad, P);
 
@@ -156,6 +157,14 @@ Number tan(Number rad)
 Number cot(Number rad)
 {
     return divide(cos(rad), sin(rad));
+}
+Number sec(Number rad)
+{
+    return divide(N_1, cos(rad));
+}
+Number csc(Number rad)
+{
+    return divide(N_1, sin(rad));
 }
 
 Number sinh(Number x)

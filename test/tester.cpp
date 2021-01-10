@@ -594,6 +594,23 @@ void test_algebra()
             "((2)+(1))/(5)-((-3)-(-(-4)))",
             get_answer("((2)+(1))/(5)-((-3)-(-(-4)))").printable_string(),
             "7.6");
+
+        // function call
+        error_if_were_not_equal(
+            "1+sin(1.57)*3^2",
+            get_answer("1+sin(1.57)*3^2").printable_string(),
+            "10");
+
+        error_if_were_not_equal(
+            "fact(5)/5+1",
+            get_answer("(fact(5)/5+1)^2").printable_string(),
+            "625");
+
+        // nested function call
+        error_if_were_not_equal(
+            "fact(fact(abs(-3)-1))",
+            get_answer("fact(fact(abs(-3)-1))").printable_string(),
+            "2");
     }
 }
 void test_entire_app()

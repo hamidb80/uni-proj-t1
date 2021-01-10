@@ -51,6 +51,8 @@ void show_help()
 
          << "sin               sin([number])" << endl
          << "cos               cos([number])" << endl
+         << "sec               sec([number])" << endl
+         << "csc               csc([number])" << endl
          << "tan               tan([number])" << endl
          << "cot               cot([number])" << endl
          << "sinh              sinh([number])" << endl
