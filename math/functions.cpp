@@ -74,7 +74,7 @@ Number ln(Number n)
     Number _sum, top = divide(subtract(n, N_1), sum(n, N_1));
 
     // TODO increase max
-    for (short int i = 1; i < 20; i += 2)
+    for (int i = 1; i < 20; i += 2)
     {
         Number inum(to_string(i));
         _sum = sum(_sum, divide(pow(top, inum), inum));
@@ -86,11 +86,16 @@ Number log(Number base, Number num)
 {
     return divide(ln(num), ln(base));
 }
-Number radical(Number base, Number num);
+Number radical(Number base, Number num)
+{
+    return base;
+}
 
 Number sin(Number rad)
 {
     rad = mod(rad, P2);
+    bool sign = !is_greater(rad, P);
+    rad = mod(rad, P);
 
     Number _sum;
     for (short int i = 0; i < max_triangle_s; i++)
@@ -106,6 +111,7 @@ Number sin(Number rad)
                        pow(rad, n2_1)));
     }
 
+    _sum.sign = sign;
     if (is_greater(abs(_sum), N_1))
     {
         bool sign = _sum.sign;
@@ -118,6 +124,8 @@ Number sin(Number rad)
 Number cos(Number rad)
 {
     rad = mod(rad, P2);
+    // bool sign = !is_greater(rad, P);
+    // rad = mod(rad, P);
 
     Number _sum;
     for (short int i = 0; i < max_triangle_s; i++)

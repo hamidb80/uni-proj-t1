@@ -17,7 +17,8 @@ bool is_numberic_char(char ch);
 unsigned short int get_operator_priority(string ope);
 
 MyTuple get_next_operator(string algebra);
-MyTuple get_next_algebra(string algebra, short int last_operator_priority);
+MyTuple get_next_algebra(string algebra, short int last_operator_priority, bool is_first = false);
 
 Number calculate(string ope, Number &n1, Number &n2);
+Number calculate(string ope, Number &n1);
 Number get_answer(string algebra);

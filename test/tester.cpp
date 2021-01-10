@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string>
 #include "../utils/test.h"
+#include "../utils/number.h"
 #include "../math/number.h"
 #include "../math/functions.h"
 #include "../math/matrix.h"
@@ -471,38 +472,120 @@ void test_functions()
             sin(Number("4.71")).printable_string(),
             "-1");
     }
+    { // cos
+
+        error_if_were_not_equal(
+            "cos(1.57)",
+            cos(Number("1.57")).printable_string(),
+            "0");
+
+        error_if_were_not_equal(
+            "cos(0.785)",
+            cos(Number("0.785")).printable_string(),
+            "0.7");
+
+        error_if_were_not_equal(
+            "cos(2.355)",
+            cos(Number("2.355")).printable_string(),
+            "-0.7");
+
+        error_if_were_not_equal(
+            "cos(3.14)",
+            cos(Number("3.14")).printable_string(),
+            "-1");
+
+        error_if_were_not_equal(
+            "cos(0)",
+            cos(Number("0")).printable_string(),
+            "1");
+
+        error_if_were_not_equal(
+            "cos(4.71)",
+            cos(Number("4.71")).printable_string(),
+            "0");
+    }
 }
 void test_algebra()
 {
-    error_if_were_not_equal(
-        "5+3",
-        get_answer("5+3").printable_string(),
-        "8");
+    { // get_next_algebra
 
-    error_if_were_not_equal(
-        "5+0.3",
-        get_answer("5.3").printable_string(),
-        "5.3");
+        error_if_were_not_equal(
+            "next algebra of (654)",
+            get_next_algebra("(654)", 5).value,
+            "654");
 
-    error_if_were_not_equal(
-        "3-5",
-        get_answer("3-5").printable_string(),
-        "-2");
+        error_if_were_not_equal(
+            "next algebra of (6*1^(43+4)-12), 5",
+            get_next_algebra("(6*1^(43+4)-12)", 5).value,
+            "6*1^(43+4)-12");
 
-    error_if_were_not_equal(
-        "34*1-5*4+1",
-        get_answer("34*1-5*4+1").printable_string(),
-        "15");
+        error_if_were_not_equal(
+            "next algebra of 6*1^(43+4)-12, 2",
+            get_next_algebra("6*1^(43+4)-12", 2).value,
+            "6");
 
-    error_if_were_not_equal(
-        "9^3-1",
-        get_answer("9^3-1").printable_string(),
-        "728");
+        error_if_were_not_equal(
+            "next algebra of 6*1^(43+4)-12, 5",
+            get_next_algebra("6*1^(43+4)-12", 5).value,
+            "6");
 
-    error_if_were_not_equal(
-        "9^3--1",
-        get_answer("9^3--1").printable_string(),
-        "730");
+        error_if_were_not_equal(
+            "next algebra of 6*1^(43+4)-12, 1",
+            get_next_algebra("6*1^(43+4)-12", 1).value,
+            "6*1^(43+4)");
+    }
+    { // e2e
+        error_if_were_not_equal(
+            "5+3",
+            get_answer("5+3").printable_string(),
+            "8");
+
+        error_if_were_not_equal(
+            "5+0.3",
+            get_answer("5+0.3").printable_string(),
+            "5.3");
+
+        error_if_were_not_equal(
+            "3-5",
+            get_answer("3-5").printable_string(),
+            "-2");
+
+        error_if_were_not_equal(
+            "34*1-5*4+1",
+            get_answer("34*1-5*4+1").printable_string(),
+            "15");
+
+        error_if_were_not_equal(
+            "9^3-1",
+            get_answer("9^3-1").printable_string(),
+            "728");
+
+        error_if_were_not_equal(
+            "6*(2+2)+1",
+            get_answer("6*(2+2)+1").printable_string(),
+            "25");
+
+        error_if_were_not_equal(
+            "1/2*2^3-5",
+            get_answer("1/2*2^3-5").printable_string(),
+            "-1");
+
+        error_if_were_not_equal(
+            "1/2*2^(1+1)-5",
+            get_answer("1/2*2^(1+1)-5").printable_string(),
+            "-3");
+
+        error_if_were_not_equal(
+            "9^3--1",
+            get_answer("9^3--1").printable_string(),
+            "730");
+
+        error_if_were_not_equal(
+            "5*3+(7*2+3*(3.5*9)-(-3))/7",
+            get_answer("5*3+(7*2+3*(3.5*9)-(-3))/7").printable_string(),
+            "30.92857");
+            
+    }
 }
 void test_entire_app()
 {
