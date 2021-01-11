@@ -59,7 +59,7 @@ Number get_var(string var_name)
 
     throw "not match";
 }
-Number calculate(string ope, Number &n1, Number &n2)
+Number calculate(string ope, Number n1, Number n2)
 {
     if (ope == "+")
         return sum(n1, n2);
@@ -81,7 +81,7 @@ Number calculate(string ope, Number &n1, Number &n2)
 
     throw "not matched";
 }
-Number calculate(string ope, Number &n1)
+Number calculate(string ope, Number n1)
 {
     if (ope == "fact")
         return fact(n1);
@@ -221,31 +221,35 @@ MyTuple get_next_algebra(string algebra, short int last_operator_priority, bool 
 // TODO: multi argument
 Number get_answer(string algebra)
 {
-    MyTuple first_algebra = get_next_algebra(algebra, 4, true);
-    Number first_number = (is_pure_number(first_algebra.value) ? Number(first_algebra.value) : get_answer(first_algebra.value));
-
-    if (first_algebra.func_name != "")
-        first_number = calculate(first_algebra.func_name, first_number);
-
-    unsigned long int i = first_algebra.last_index + 1;
+    unsigned long int i = 0;
+    MyTuple opera("+", -1);
+    Number result;
+    bool is_first = true;
 
     while (i < algebra.length())
     {
-        MyTuple opera = get_next_operator(algebra.substr(i));
+        MyTuple next_algebra = get_next_algebra(algebra.substr(i), (is_first ? 4 : get_operator_priority(opera.value)), is_first);
+        Number next_result;
+
+        if (is_pure_number(next_algebra.value))
+            next_result = Number(next_algebra.value);
+        else
+            next_result = get_answer(next_algebra.value);
+
+        if (next_algebra.func_name != "")
+            next_result = calculate(next_algebra.func_name, next_result);
+
+        result = (is_first ? next_result : calculate(opera.value, result, next_result));
+        i += next_algebra.last_index + 1;
+
+        opera = get_next_operator(algebra.substr(i));
 
         if (opera.value == "none")
             break;
 
         i += opera.last_index + 1;
-        MyTuple second_algebra = get_next_algebra(algebra.substr(i), get_operator_priority(opera.value));
-        Number second_number = get_answer(second_algebra.value);
-
-        if (second_algebra.func_name != "")
-            second_number = calculate(second_algebra.func_name, second_number);
-
-        first_number = calculate(opera.value, first_number, second_number);
-        i += second_algebra.last_index + 1;
+        is_first = false;
     }
 
-    return first_number;
+    return result;
 }

@@ -9,9 +9,11 @@
 
 using namespace std;
 
+extern Number N_0, N_1, _N_1;
+
 void test_number()
 {
-    { // greater test
+    { // greater
         error_if_were_not_equal(
             "999 > 999",
             is_greater(Number("999"), Number("999")),
@@ -58,7 +60,7 @@ void test_number()
             are_equal(Number("2"), Number("2.0000")),
             true);
     }
-    { // summation test
+    { // summation
         error_if_were_not_equal(
             "991 + 999 ",
             sum(Number("999"), Number("991")).printable_string(),
@@ -99,7 +101,7 @@ void test_number()
             sum(Number("-5"), Number("1")).printable_string(),
             "-4");
     }
-    { // subtraction test
+    { // subtraction
         error_if_were_not_equal(
             "991 - 999",
             subtract(Number("991"), Number("999")).printable_string(),
@@ -150,7 +152,7 @@ void test_number()
             subtract(Number("-5"), Number("1")).printable_string(),
             "-6");
     }
-    { // multipicataton test
+    { // multipicataton
         error_if_were_not_equal(
             "24 * 67",
             multiplicate(Number("24"), Number("67")).printable_string(),
@@ -201,7 +203,7 @@ void test_number()
             multiplicate(Number("17"), Number("0.1")).printable_string(),
             "1.7");
     }
-    { // division test
+    { // division
         error_if_were_not_equal(
             "14/2",
             divide(Number("14"), Number("2")).printable_string(),
@@ -297,7 +299,38 @@ void test_number()
             divide(Number("2"), Number("3"), true).printable_string(),
             "0");
     }
-    { // Number functionality
+    { // mod
+        error_if_were_not_equal(
+            "10 mod 3",
+            mod(Number("10"), Number("3")).printable_string(),
+            "1");
+
+        error_if_were_not_equal(
+            "3 mod 10",
+            mod(Number("3"), Number("10")).printable_string(),
+            "3");
+
+        error_if_were_not_equal(
+            "3 mod 3",
+            mod(Number("3"), Number("3")).printable_string(),
+            "0");
+
+        error_if_were_not_equal(
+            "3.3 mod 3",
+            mod(Number("3.3"), Number("3")).printable_string(),
+            "0.3");
+
+        error_if_were_not_equal(
+            "6 mod 3.3",
+            mod(Number("6"), Number("3.3")).printable_string(),
+            "2.7");
+
+        error_if_were_not_equal(
+            "3.6 mod 3.3",
+            mod(Number("3.6"), Number("3.3")).printable_string(),
+            "0.3");
+    }
+    { // Number class functionality
 
         Number num("45");
 
@@ -441,68 +474,92 @@ void test_functions()
             mod(Number("10"), Number("0.3")).printable_string(),
             "0.1");
     }
+    
     { // sin
         error_if_were_not_equal(
             "sin(1.57)",
-            sin(Number("1.57")).printable_string(),
-            "1");
+            are_approxiamtly_equal(
+                sin(Number("1.57")), N_1,
+                Number("0.01")),
+            true);
 
         error_if_were_not_equal(
             "sin(0.785)",
-            sin(Number("0.785")).printable_string(),
-            "0.7");
+            are_approxiamtly_equal(
+                sin(Number("0.785")), Number("0.7"),
+                Number("0.01")),
+            true);
 
         error_if_were_not_equal(
             "sin(2.355)",
-            sin(Number("2.355")).printable_string(),
-            "0.7");
+            are_approxiamtly_equal(
+                sin(Number("2.355")), Number("0.7"),
+                Number("0.01")),
+            true);
 
         error_if_were_not_equal(
             "sin(3.14)",
-            sin(Number("3.14")).printable_string(),
-            "0");
+            are_approxiamtly_equal(
+                sin(Number("3.14")), N_0,
+                Number("0.01")),
+            true);
 
         error_if_were_not_equal(
             "sin(314)",
-            sin(Number("314")).printable_string(),
-            "0");
+            are_approxiamtly_equal(
+                sin(Number("314")), N_0,
+                Number("0.01")),
+            true);
 
         error_if_were_not_equal(
             "sin(4.71)",
-            sin(Number("4.71")).printable_string(),
-            "-1");
+            are_approxiamtly_equal(
+                sin(Number("4.71")), _N_1,
+                Number("0.01")),
+            true);
     }
     { // cos
-
         error_if_were_not_equal(
             "cos(1.57)",
-            cos(Number("1.57")).printable_string(),
-            "0");
+            are_approxiamtly_equal(
+                cos(Number("1.57")), N_0,
+                Number("0.01")),
+            true);
 
         error_if_were_not_equal(
             "cos(0.785)",
-            cos(Number("0.785")).printable_string(),
-            "0.7");
+            are_approxiamtly_equal(
+                cos(Number("0.785")), Number("0.7"),
+                Number("0.01")),
+            true);
 
         error_if_were_not_equal(
             "cos(2.355)",
-            cos(Number("2.355")).printable_string(),
-            "-0.7");
+            are_approxiamtly_equal(
+                cos(Number("2.355")), Number("-0.7"),
+                Number("0.01")),
+            true);
 
         error_if_were_not_equal(
             "cos(3.14)",
-            cos(Number("3.14")).printable_string(),
-            "-1");
+            are_approxiamtly_equal(
+                cos(Number("3.14")), _N_1,
+                Number("0.01")),
+            true);
 
         error_if_were_not_equal(
             "cos(0)",
-            cos(Number("0")).printable_string(),
-            "1");
+            are_approxiamtly_equal(
+                cos(Number("0")), N_1,
+                Number("0.01")),
+            true);
 
         error_if_were_not_equal(
             "cos(4.71)",
-            cos(Number("4.71")).printable_string(),
-            "0");
+            are_approxiamtly_equal(
+                cos(Number("4.71")), N_0,
+                Number("0.01")),
+            true);
     }
 }
 void test_algebra()
