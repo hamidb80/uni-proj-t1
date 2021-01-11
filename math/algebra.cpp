@@ -13,6 +13,36 @@ MyTuple::MyTuple(string _value, long int _last_index, string fname)
     last_index = _last_index;
     func_name = fname;
 }
+// TODO: seprate MyTuple from next_algebra & next_operator
+class Arguments
+{
+public:
+    string arg1, arg2;
+
+    Arguments(string _arg1 = "", string _arg2 = "")
+    {
+        arg1 = _arg1;
+        arg2 = _arg2;
+    }
+};
+
+Arguments get_arguments(string inside_pars)
+{
+    short int depth = 0;
+
+    for (unsigned i = 0; i < inside_pars.length(); i++)
+    {
+        if (inside_pars[i] == '(')
+            depth++;
+        else if (inside_pars[i] == ')')
+            depth--;
+
+        else if (depth == 0 && inside_pars[i] == ',')
+            return Arguments(inside_pars.substr(0, i), inside_pars.substr(i + 1));
+    }
+
+    return Arguments(inside_pars);
+}
 
 bool is_alphabet(char ch)
 {
@@ -75,6 +105,9 @@ Number calculate(string ope, Number n1, Number n2)
 
     else if (ope == "^")
         return pow(n1, n2);
+
+    else if (ope == "stick")
+        return Number(n1.printable_string() + n2.printable_string());
 
     throw "not matched";
 }
@@ -242,11 +275,9 @@ MyTuple get_next_algebra(string algebra, short int last_operator_priority, bool 
     return MyTuple((pars == 1 ? remove_pars(scope) : scope), i - 1, funcname);
 }
 
-// TODO: multi argument
-// TODO: seprate MyTuple from next_algebra & next_operator
 Number get_answer(string algebra)
 {
-    MyTuple opera("+", -1);
+    MyTuple opera("@", -1);
     Number result;
     bool is_first = true;
 
@@ -256,13 +287,19 @@ Number get_answer(string algebra)
         MyTuple next_algebra = get_next_algebra(algebra.substr(i), (is_first ? 4 : get_operator_priority(opera.value)), is_first);
         Number next_result;
 
-        if (is_pure_number(next_algebra.value))
+        if (next_algebra.func_name != "")
+        {
+            Arguments args = get_arguments(next_algebra.value);
+
+            if (args.arg2 == "")
+                next_result = calculate(next_algebra.func_name, get_answer(args.arg1));
+            else
+                next_result = calculate(next_algebra.func_name, get_answer(args.arg1), get_answer(args.arg2));
+        }
+        else if (is_pure_number(next_algebra.value))
             next_result = Number(next_algebra.value);
         else
             next_result = get_answer(next_algebra.value);
-
-        if (next_algebra.func_name != "")
-            next_result = calculate(next_algebra.func_name, next_result);
 
         result = (is_first ? next_result : calculate(opera.value, result, next_result));
         i += next_algebra.last_index + 1;
