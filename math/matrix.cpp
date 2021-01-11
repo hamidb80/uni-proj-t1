@@ -11,7 +11,7 @@ Matrix::Matrix()
 
     for (int y = 0; y < rows; y++)
         for (int x = 0; x < columns; x++)
-            table[y][x] = Number("0", "10");
+            table[y][x] = Number("0");
 }
 Matrix::Matrix(int _rows, int _columns, Number _table[MAX_ROWS][MAX_COLUMNS])
 {

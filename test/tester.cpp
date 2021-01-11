@@ -9,7 +9,7 @@
 
 using namespace std;
 
-extern Number N_0, N_1, _N_1;
+extern Number N_0, N_1, _N_1, E, P;
 
 void test_number()
 {
@@ -474,7 +474,7 @@ void test_functions()
             mod(Number("10"), Number("0.3")).printable_string(),
             "0.1");
     }
-    
+
     { // sin
         error_if_were_not_equal(
             "sin(1.57)",
@@ -565,15 +565,14 @@ void test_functions()
 void test_algebra()
 {
     { // get_next_algebra
-
         error_if_were_not_equal(
             "next algebra of (654)",
-            get_next_algebra("(654)", 5).value,
+            get_next_algebra("(654)", 4).value,
             "654");
 
         error_if_were_not_equal(
             "next algebra of (6*1^(43+4)-12), 5",
-            get_next_algebra("(6*1^(43+4)-12)", 5).value,
+            get_next_algebra("(6*1^(43+4)-12)", 4).value,
             "6*1^(43+4)-12");
 
         error_if_were_not_equal(
@@ -583,7 +582,7 @@ void test_algebra()
 
         error_if_were_not_equal(
             "next algebra of 6*1^(43+4)-12, 5",
-            get_next_algebra("6*1^(43+4)-12", 5).value,
+            get_next_algebra("6*1^(43+4)-12", 4).value,
             "6");
 
         error_if_were_not_equal(
@@ -592,11 +591,8 @@ void test_algebra()
             "6*1^(43+4)");
     }
     { // get_answer
-        error_if_were_not_equal(
-            "5+3",
-            get_answer("5+3").printable_string(),
-            "8");
 
+        // basic sum/sub
         error_if_were_not_equal(
             "5+0.3",
             get_answer("5+0.3").printable_string(),
@@ -607,6 +603,7 @@ void test_algebra()
             get_answer("3-5").printable_string(),
             "-2");
 
+        // operator priority
         error_if_were_not_equal(
             "34*1-5*4+1",
             get_answer("34*1-5*4+1").printable_string(),
@@ -618,29 +615,52 @@ void test_algebra()
             "728");
 
         error_if_were_not_equal(
-            "6*(2+2)+1",
-            get_answer("6*(2+2)+1").printable_string(),
-            "25");
-
-        error_if_were_not_equal(
             "1/2*2^3-5",
             get_answer("1/2*2^3-5").printable_string(),
             "-1");
 
+        // minus minus
         error_if_were_not_equal(
-            "1/2*2^(1+1)-5",
-            get_answer("1/2*2^(1+1)-5").printable_string(),
-            "-3");
+            "-----4",
+            get_answer("-----4").printable_string(),
+            "-4");
+
+        error_if_were_not_equal(
+            "------4",
+            get_answer("------4").printable_string(),
+            "4");
 
         error_if_were_not_equal(
             "9^3--1",
             get_answer("9^3--1").printable_string(),
             "730");
 
+        // pars
+        error_if_were_not_equal(
+            "6*(2+2)+1",
+            get_answer("6*(2+2)+1").printable_string(),
+            "25");
+
+        error_if_were_not_equal(
+            "1/2*2^(1+1)-5",
+            get_answer("1/2*2^(1+1)-5").printable_string(),
+            "-3");
+
+        // nested pars
         error_if_were_not_equal(
             "5*3+(7*2+3*(3.5*9)-(-3))/7",
             get_answer("5*3+(7*2+3*(3.5*9)-(-3))/7").printable_string(),
             "30.92857");
+
+        error_if_were_not_equal(
+            "(((2)))*3-1",
+            get_answer("(((2)))*3-1").printable_string(),
+            "5");
+
+        error_if_were_not_equal(
+            "(-((2)))*3+1",
+            get_answer("(-((2)))*3+1").printable_string(),
+            "-5");
 
         error_if_were_not_equal(
             "(2)+(1)*(5)*(-3)-(-(-4))",
@@ -668,6 +688,34 @@ void test_algebra()
             "fact(fact(abs(-3)-1))",
             get_answer("fact(fact(abs(-3)-1))").printable_string(),
             "2");
+
+        error_if_were_not_equal(
+            "fact(0)+fact(1)*fact(2)/fact(3)",
+            get_answer("fact(0)+fact(1)*fact(2)/fact(3)").printable_string(),
+            "1.33333");
+
+        // varible call
+        error_if_were_not_equal(
+            "e",
+            get_answer("e").printable_string(),
+            E.printable_string());
+
+        error_if_were_not_equal(
+            "e+p",
+            get_answer("e+p").printable_string(),
+            sum(P, E).printable_string());
+
+        error_if_were_not_equal(
+            "1+e*p",
+            get_answer("1+e*p").printable_string(),
+            sum(N_1, multiplicate(P, E)).printable_string());
+
+        error_if_were_not_equal(
+            "5*3+(7*2+3*(3.5*9)-(-3))/7+p*e",
+            are_approxiamtly_equal(
+                get_answer("5*3+(7*2+3*(3.5*9)-(-3))/7+p*e"), Number("39.4683"),
+                Number("0.001")),
+            true);
     }
 }
 void test_entire_app()

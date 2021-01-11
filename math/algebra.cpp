@@ -49,7 +49,6 @@ string remove_pars(string str)
     return str;
 }
 
-// TODO:
 Number get_var(string var_name)
 {
     if (var_name == "e")
@@ -57,7 +56,8 @@ Number get_var(string var_name)
     else if (var_name == "p")
         return P;
 
-    throw "not match";
+    // TODO make all errors like this
+    __throw_domain_error("the var is not exists");
 }
 Number calculate(string ope, Number n1, Number n2)
 {
@@ -76,56 +76,50 @@ Number calculate(string ope, Number n1, Number n2)
     else if (ope == "^")
         return pow(n1, n2);
 
-    // else if (ope == "log")
-    // return log(n1);
-
     throw "not matched";
 }
-Number calculate(string ope, Number n1)
+Number calculate(string func_name, Number n1)
 {
-    if (ope == "fact")
+    if (func_name == "fact")
         return fact(n1);
-    if (ope == "abs")
+    if (func_name == "abs")
         return abs(n1);
-    else if (ope == "floor")
+    else if (func_name == "floor")
         return floor(n1);
-    else if (ope == "ceil")
+    else if (func_name == "ceil")
         return ceil(n1);
 
-    else if (ope == "sin")
+    else if (func_name == "sin")
         return sin(n1);
-    else if (ope == "cos")
+    else if (func_name == "cos")
         return cos(n1);
-    else if (ope == "sec")
+    else if (func_name == "sec")
         return sec(n1);
-    else if (ope == "csc")
+    else if (func_name == "csc")
         return csc(n1);
-    else if (ope == "tan")
+    else if (func_name == "tan")
         return tan(n1);
-    else if (ope == "cot")
+    else if (func_name == "cot")
         return cot(n1);
 
-    else if (ope == "sinh")
+    else if (func_name == "sinh")
         return sinh(n1);
-    else if (ope == "cosh")
+    else if (func_name == "cosh")
         return cosh(n1);
-    else if (ope == "tanh")
+    else if (func_name == "tanh")
         return tanh(n1);
-    else if (ope == "coth")
+    else if (func_name == "coth")
         return coth(n1);
 
-    throw "not matched";
+    return get_var(func_name);
 }
 
-// get_arguments log(2, 4*3)
-// function
 unsigned short int get_operator_priority(string ope)
 {
     /* Character   | Priority
        - +         | 1
        * /         | 2
-       ^ ! func()  | 3
-       ()          | 4 */
+       ^ func()    | 3 */
 
     if (ope == "-" || ope == "+")
         return 1;
@@ -133,7 +127,7 @@ unsigned short int get_operator_priority(string ope)
     else if (ope == "*" || ope == "/")
         return 2;
 
-    else if (ope == "^" || ope == "!")
+    else if (ope == "^")
         return 3;
 
     throw "not matched";
@@ -153,8 +147,9 @@ MyTuple get_next_algebra(string algebra, short int last_operator_priority, bool 
     unsigned int
         depth = 0, // depth of pars
         pars = 0;  // how many pars exists in this expression (algebra)?
+
     bool matched = false;
-    string funcname = "", scope = "";
+    string funcname = "";
 
     for (; i < algebra.length(); i++)
     {
@@ -172,31 +167,55 @@ MyTuple get_next_algebra(string algebra, short int last_operator_priority, bool 
                 throw "depth error";
         }
 
-        else if (!is_numberic(algebra[i]) && depth == 0)
+        else if (depth == 0)
         {
-            if (matched == false)
+            if (is_alphabet(algebra[i]))
             {
-                // "---1" for example
-                if (is_sign(algebra[i]))
+                if (!matched)
                 {
-                    if (is_first)
-                        return MyTuple("0", -1);
+                    // get the whole word
+                    for (; i < algebra.length() && is_alphabet(algebra[i]); i++)
+                        funcname += algebra[i];
 
-                    continue;
+                    // if it wasn't function, assume it as a number
+                    if (algebra[i] != '(')
+                        matched = true;
+
+                    i--;
                 }
-                else if (is_alphabet(algebra[i]))
-                    funcname += algebra[i];
+                // if there was more than 1 word, assume them as numbers
                 else
-                    throw "err";
+                    funcname = "";
+            }
+            else if (!is_numberic(algebra[i]))
+            {
+                if (matched == false)
+                {
+                    // "---1" for example
+                    if (is_sign(algebra[i]))
+                    {
+                        if (is_first)
+                            return MyTuple("0", -1);
+
+                        continue;
+                    }
+
+                    else
+                        throw "err";
+                }
+                else
+                {
+                    short int operator_priority = get_operator_priority(string(1, algebra[i]));
+
+                    if (operator_priority <= last_operator_priority)
+                        break;
+                }
             }
             else
-            {
-                short int operator_priority = get_operator_priority(string(1, algebra[i]));
-
-                if (operator_priority <= last_operator_priority)
-                    break;
-            }
+                matched = true;
         }
+
+        // match everything between pars
         else
             matched = true;
     }
@@ -205,27 +224,33 @@ MyTuple get_next_algebra(string algebra, short int last_operator_priority, bool 
         throw "depth error";
 
     // --------
-    bool is_func_call = (pars == 1 && funcname != "" && algebra[algebra.length() - 1] == ')');
 
-    if (is_func_call)
+    bool is_function_call = (funcname != "" && pars == 1 && algebra[algebra.length() - 1] == ')');
+    bool is_var_call = (funcname != "" && algebra.substr(0, i) == funcname);
+    string scope;
+
+    if (is_function_call)
         scope = algebra.substr(funcname.length(), i - funcname.length());
     else
     {
-        scope = algebra.substr(0, i);
-        funcname = "";
+        if (!is_var_call)
+        {
+            funcname = "";
+            scope = algebra.substr(0, i);
+        }
     }
-
     return MyTuple((pars == 1 ? remove_pars(scope) : scope), i - 1, funcname);
 }
 
 // TODO: multi argument
+// TODO: seprate MyTuple from next_algebra & next_operator
 Number get_answer(string algebra)
 {
-    unsigned long int i = 0;
     MyTuple opera("+", -1);
     Number result;
     bool is_first = true;
 
+    unsigned long int i = 0;
     while (i < algebra.length())
     {
         MyTuple next_algebra = get_next_algebra(algebra.substr(i), (is_first ? 4 : get_operator_priority(opera.value)), is_first);

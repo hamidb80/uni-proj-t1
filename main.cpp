@@ -107,7 +107,7 @@ int main()
         }
         else if (option == 1)
         {
-            cout << "enter your algebra: " << endl;
+            cout << "enter your algebra: " << endl << ">  ";
 
             string line;
             getline(cin, line);
