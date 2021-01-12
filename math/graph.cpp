@@ -75,7 +75,7 @@ void draw_graph(string expression, Range x_range, Number x_step, Range y_range, 
     // printing data
     for (Number y = y_range.end; is_greater_equal(y, y_range.start); y = subtract(y, y_step))
     {
-        Range line_range(y, sum(y, y_step));
+        Range line_range(subtract(y, y_step), y);
 
         for (Number x = x_range.start; is_smaller_equal(x, x_range.end); x = sum(x, x_step))
         {

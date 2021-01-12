@@ -47,6 +47,21 @@ void test_number()
             is_greater(Number("-4.45"), Number("-4.6")),
             true);
 
+        error_if_were_not_equal(
+            "-10 > -0.1",
+            is_greater(Number("-10"), Number("-0.1")),
+            false);
+
+        error_if_were_not_equal(
+            "-0.1 > -10",
+            is_greater(Number("-0.1"), Number("-10")),
+            true);
+
+        error_if_were_not_equal(
+            "-10 > 0",
+            is_greater(Number("-10"), Number("0")),
+            false);
+
         // are equal
         error_if_were_not_equal(
             "999 == 999",
@@ -88,6 +103,11 @@ void test_number()
             "999 < 991",
             is_smaller(Number("999"), Number("991")),
             false);
+
+        error_if_were_not_equal(
+            "-10 < -0.1",
+            is_smaller(Number("-10"), Number("-0.1")),
+            true);
 
         // greater equal
         error_if_were_not_equal(
@@ -786,10 +806,10 @@ void test_graph()
 
     // draw_graph("x", x_r, Number("1"), y_r, Number("1"));
 
-    Range y_r(Number("-1"), Number("2")),
-        x_r(Number("-3"), Number("3"));
+    Range y_r(Number("-2"), Number("2")),
+        x_r(Number("0"), Number("6"));
 
-    draw_graph("sin(x)+cos(x)", x_r, Number("0.1"), y_r, Number("0.1"));
+    draw_graph("tan(x)", x_r, Number("0.1"), y_r, Number("0.1"));
 }
 void test_entire_app()
 {

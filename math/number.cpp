@@ -343,8 +343,14 @@ bool is_greater(Number n1, Number n2)
         n1_len = n1.int_length(),
         n2_len = n2.int_length();
 
-    if (n1_len > n2_len)
-        return true;
+    if (n1_len != n2_len)
+    {
+        // if they were positive
+        if (n1.sign)
+            return n1_len > n2_len;
+        else
+            return n2_len > n1_len;
+    }
 
     sync_float_points(n1, n2);
 
