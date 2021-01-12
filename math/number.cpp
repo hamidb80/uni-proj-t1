@@ -9,9 +9,9 @@ using namespace std;
 Number
     P("3.14159"),
     P2("6.28318"),
-    
+
     E("2.71828"),
-       
+
     N_0("0"), N_1("1"),
     _N_1("-1"),
     N_2("2"), N_10("10");
@@ -336,6 +336,9 @@ DivRes simple_divide(Number dividend, Number divisor)
 // -- checks which one is greater (only with respect to their absolute value)
 bool is_greater(Number n1, Number n2)
 {
+    if (n1.sign != n2.sign)
+        return n1.sign;
+
     unsigned int
         n1_len = n1.int_length(),
         n2_len = n2.int_length();
@@ -356,7 +359,13 @@ bool is_greater(Number n1, Number n2)
                 n2_digit = n2.digits[MAX_DIGITS - (n2_len) + i];
 
             if (n1_digit != n2_digit)
-                return n1_digit > n2_digit;
+            {
+                if (n1.sign)
+                    return n1_digit > n2_digit;
+                // if they were negetive
+                else
+                    return n1_digit < n2_digit;
+            }
         }
 
     return false;
@@ -367,7 +376,7 @@ bool are_equal(Number n1, Number n2)
         n1_len = n1.int_length(),
         n2_len = n2.int_length();
 
-    if (n1_len != n2_len)
+    if (n1_len != n2_len || n1.sign != n2.sign)
         return false;
 
     sync_float_points(n1, n2);
@@ -388,7 +397,18 @@ bool are_equal(Number n1, Number n2)
 
     return true;
 }
-
+bool is_smaller_equal(Number n1, Number n2)
+{
+    return !is_greater(n1, n2);
+}
+bool is_smaller(Number n1, Number n2)
+{
+    return is_greater(n2, n1);
+}
+bool is_greater_equal(Number n1, Number n2)
+{
+    return is_smaller_equal(n2, n1);
+}
 // other functionalities
 void sync_float_points(Number &n1, Number &n2)
 {

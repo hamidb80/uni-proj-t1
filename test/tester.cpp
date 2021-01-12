@@ -1,11 +1,12 @@
 #include <iostream>
 #include <string>
-#include "../utils/test.h"
-#include "../utils/number.h"
 #include "../math/number.h"
 #include "../math/functions.h"
 #include "../math/matrix.h"
 #include "../math/algebra.h"
+#include "../math/graph.h"
+#include "../utils/test.h"
+#include "../utils/number.h"
 
 using namespace std;
 
@@ -13,7 +14,14 @@ extern Number N_0, N_1, _N_1, E, P;
 
 void test_number()
 {
-    { // greater
+    { // comparation
+
+        // greater
+        error_if_were_not_equal(
+            "999 > 999",
+            is_greater(Number("999"), Number("999")),
+            false);
+
         error_if_were_not_equal(
             "999 > 999",
             is_greater(Number("999"), Number("999")),
@@ -33,8 +41,13 @@ void test_number()
             "991 > 99.3",
             is_greater(Number("991"), Number("99.3")),
             true);
-    }
-    { // are equal
+
+        error_if_were_not_equal(
+            "-4.45 > -4.6",
+            is_greater(Number("-4.45"), Number("-4.6")),
+            true);
+
+        // are equal
         error_if_were_not_equal(
             "999 == 999",
             are_equal(Number("999"), Number("999")),
@@ -59,6 +72,54 @@ void test_number()
             "2 == 2.0000",
             are_equal(Number("2"), Number("2.0000")),
             true);
+
+        // smaller
+        error_if_were_not_equal(
+            "999 < 999",
+            is_smaller(Number("999"), Number("999")),
+            false);
+
+        error_if_were_not_equal(
+            "991 < 999",
+            is_smaller(Number("991"), Number("999")),
+            true);
+
+        error_if_were_not_equal(
+            "999 < 991",
+            is_smaller(Number("999"), Number("991")),
+            false);
+
+        // greater equal
+        error_if_were_not_equal(
+            "999 >= 999",
+            is_greater_equal(Number("999"), Number("999")),
+            true);
+
+        error_if_were_not_equal(
+            "991 >= 999",
+            is_greater_equal(Number("991"), Number("999")),
+            false);
+
+        error_if_were_not_equal(
+            "999 >= 991",
+            is_greater_equal(Number("999"), Number("991")),
+            true);
+
+        // smaller equal
+        error_if_were_not_equal(
+            "999 <= 999",
+            is_smaller_equal(Number("999"), Number("999")),
+            true);
+
+        error_if_were_not_equal(
+            "991 <= 999",
+            is_smaller_equal(Number("991"), Number("999")),
+            true);
+
+        error_if_were_not_equal(
+            "999 <= 991",
+            is_smaller_equal(Number("999"), Number("991")),
+            false);
     }
     { // summation
         error_if_were_not_equal(
@@ -718,6 +779,18 @@ void test_algebra()
             true);
     }
 }
+void test_graph()
+{
+    // Range y_r(Number("-3"), Number("3")),
+    //     x_r(Number("-3"), Number("3"));
+
+    // draw_graph("x", x_r, Number("1"), y_r, Number("1"));
+
+    Range y_r(Number("-1"), Number("2")),
+        x_r(Number("-3"), Number("3"));
+
+    draw_graph("sin(x)+cos(x)", x_r, Number("0.1"), y_r, Number("0.1"));
+}
 void test_entire_app()
 {
     cout << "--- Fails ---" << endl;
@@ -726,6 +799,7 @@ void test_entire_app()
     test_number();
     test_functions();
     test_algebra();
+    test_graph();
 
     cout << "--- APP TESTED ---" << endl;
 }

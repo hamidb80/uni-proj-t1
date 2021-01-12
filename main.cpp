@@ -3,6 +3,7 @@
 #include "math/number.h"
 #include "math/matrix.h"
 #include "math/algebra.h"
+#include "math/graph.h"
 #include "utils/string.h"
 #include "test/tester.h"
 
@@ -107,7 +108,8 @@ int main()
         }
         else if (option == 1)
         {
-            cout << "enter your algebra: " << endl << ">  ";
+            cout << "enter your algebra: " << endl
+                 << ">  ";
 
             string line;
             getline(cin, line);
@@ -184,6 +186,28 @@ int main()
             string line;
             getline(cin, line);
             line = remove_spaces(line);
+
+            string x_start, x_end, x_step,
+                y_start, y_end, y_step;
+
+            cout << "x start range: ";
+            cin >> x_start;
+            cout << "x end range: ";
+            cin >> x_end;
+            cout << "x step: ";
+            cin >> x_step;
+
+            cout << "y start range: ";
+            cin >> y_start;
+            cout << "y end range: ";
+            cin >> y_end;
+            cout << "y step: ";
+            cin >> y_step;
+
+            draw_graph(line,
+                       Range(Number(x_start), Number(x_end)), Number(x_step),
+                       Range(Number(y_start), Number(y_end)), Number(y_step));
+            
         }
         else if (option == 5)
             show_help();

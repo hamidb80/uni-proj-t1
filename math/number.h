@@ -61,6 +61,9 @@ DivRes simple_divide(Number dividend, Number divisor);
 // --- comparation
 bool is_greater(Number n1, Number n2);
 bool are_equal(Number n1, Number n2);
+bool is_smaller_equal(Number n1, Number n2);
+bool is_smaller(Number n1, Number n2);
+bool is_greater_equal(Number n1, Number n2);
 
 // --- other functions
 void sync_float_points(Number &n1, Number &n2);
