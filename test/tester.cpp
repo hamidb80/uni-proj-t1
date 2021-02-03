@@ -1,5 +1,6 @@
 #include <iostream>
 #include <string>
+
 #include "../math/number.h"
 #include "../math/functions.h"
 #include "../math/matrix.h"
@@ -14,8 +15,109 @@ extern Number N_0, N_1, _N_1, E, P;
 
 void test_number()
 {
-    { // comparation
+    { // functionalities
 
+        // sign
+        error_if_were_not_equal(
+            "sign of -13",
+            Number("-13").sign, false);
+
+        error_if_were_not_equal(
+            "sign of 0",
+            Number("0").sign, true);
+
+        error_if_were_not_equal(
+            "sign of 1213",
+            Number("1213").sign, true);
+
+        // int len
+        error_if_were_not_equal(
+            "int len of 30",
+            Number("3650").int_length(), 4);
+
+        error_if_were_not_equal(
+            "int len of 30",
+            Number("30.0").int_length(), 2);
+
+        error_if_were_not_equal(
+            "int len of 0",
+            Number("0").int_length(), 1);
+
+        // float len
+        error_if_were_not_equal(
+            "float len of 30",
+            Number("30").float_length(), 0);
+
+        error_if_were_not_equal(
+            "float len of 30",
+            Number("30.0").float_length(), 1);
+
+        error_if_were_not_equal(
+            "float len of 30.",
+            Number("30.1").float_length(), 1);
+
+        error_if_were_not_equal(
+            "float len of 30.123",
+            Number("30.123").float_length(), 3);
+
+        // print
+        error_if_were_not_equal(
+            "30",
+            Number("30").printable_string(), "30");
+
+        error_if_were_not_equal(
+            "0546",
+            Number("0546").printable_string(), "546");
+
+        error_if_were_not_equal(
+            "0.11",
+            Number("0.11").printable_string(), "0.11");
+
+        error_if_were_not_equal(
+            "12.46600",
+            Number("12.46600").printable_string(), "12.466");
+
+        // shift_digits_for
+        Number num45("45");
+        string old_num = num45.printable_string();
+        num45.shift_digits_for(2);
+
+        error_if_were_not_equal(
+            old_num + " shift for 2 indexes",
+            num45.printable_string(), "4500");
+
+        string new_num_str = num45.printable_string();
+        num45.shift_digits_for(-2);
+
+        error_if_were_not_equal(
+            new_num_str + " shift for -2 indexes",
+            num45.printable_string(), "45");
+
+        // remove_float_after
+        Number num63("63");
+        num63.remove_float_after(2);
+
+        error_if_were_not_equal(
+            "remove float after 2 for 63" + num63.printable_string(),
+            num63.printable_string(), "63");
+        
+        // --------------------
+        Number num63_1("63.1");
+        num63_1.remove_float_after(2);
+
+        error_if_were_not_equal(
+            "remove float after 2 for 63.1" + num63_1.printable_string(),
+            num63_1.printable_string(), "63.1");
+
+        // --------------------
+        Number num2_4654("2.4654");
+        num2_4654.remove_float_after(2);
+
+        error_if_were_not_equal(
+            "remove float after 2 for 2.4654" + num2_4654.printable_string(),
+            num2_4654.printable_string(), "2.46");
+    }
+    { // comparation
         // greater
         error_if_were_not_equal(
             "999 > 999",
@@ -426,26 +528,6 @@ void test_number()
             mod(Number("3.6"), Number("3.3")).printable_string(),
             "0.3");
     }
-    { // Number class functionality
-
-        Number num("45");
-
-        string old_num = num.printable_string();
-        num.shift_digits_for(2);
-
-        error_if_were_not_equal(
-            old_num + " shift for 2 indexes",
-            num.printable_string(),
-            "4500");
-
-        string new_num = num.printable_string();
-        num.shift_digits_for(-2);
-
-        error_if_were_not_equal(
-            new_num + " shift for -2 indexes",
-            num.printable_string(),
-            "45");
-    }
 }
 void test_matrix() {}
 void test_functions()
@@ -715,7 +797,6 @@ void test_algebra()
             get_answer("1/2*2^3-5").printable_string(),
             "-1");
 
-
         // minus minus
         error_if_were_not_equal(
             "-++4",
@@ -834,7 +915,8 @@ void test_graph()
 }
 void test_entire_app()
 {
-    cout << "--- Fails ---" << "\n\n";
+    cout << "--- Fails ---"
+         << "\n\n";
 
     test_matrix();
     test_number();
@@ -843,5 +925,6 @@ void test_entire_app()
 
     test_graph();
 
-    cout << "\n\n --- APP TESTED ---" << "\n\n";
+    cout << "\n\n --- APP TESTED ---"
+         << "\n\n";
 }

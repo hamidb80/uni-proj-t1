@@ -1,6 +1,7 @@
+#include <iostream>
+
 #include "number.h"
 #include "matrix.h"
-#include <iostream>
 
 using namespace std;
 

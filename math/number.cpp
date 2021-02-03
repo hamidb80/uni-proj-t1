@@ -1,6 +1,7 @@
 #include <string>
 #include <vector>
 #include <cstdlib>
+
 #include "number.h"
 
 using namespace std;

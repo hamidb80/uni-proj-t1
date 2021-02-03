@@ -1,5 +1,6 @@
 #include <string>
 #include <vector>
+
 #include "algebra.h"
 #include "number.h"
 #include "functions.h"
