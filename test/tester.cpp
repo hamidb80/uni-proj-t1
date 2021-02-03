@@ -594,17 +594,17 @@ void test_functions()
             true);
 
         error_if_were_not_equal(
-            "sin(3.14)=> " + sin(Number("3.14")).printable_string() + " != " + N_0.printable_string(),
+            "sin(3.14)=> ",
             are_approxiamtly_equal(
                 sin(Number("3.14")), N_0,
                 Number("0.05")),
             true);
 
         error_if_were_not_equal(
-            "sin(314)",
+            "sin(31.4)=> ",
             are_approxiamtly_equal(
-                sin(Number("314")), N_0,
-                Number("0.01")),
+                sin(Number("31.4")), N_0,
+                Number("0.05")),
             true);
 
         error_if_were_not_equal(
@@ -715,7 +715,13 @@ void test_algebra()
             get_answer("1/2*2^3-5").printable_string(),
             "-1");
 
+
         // minus minus
+        error_if_were_not_equal(
+            "-++4",
+            get_answer("-----4").printable_string(),
+            "-4");
+
         error_if_were_not_equal(
             "-----4",
             get_answer("-----4").printable_string(),
@@ -828,13 +834,14 @@ void test_graph()
 }
 void test_entire_app()
 {
-    cout << "--- Fails ---" << endl;
+    cout << "--- Fails ---" << "\n\n";
 
     test_matrix();
     test_number();
     test_functions();
     test_algebra();
+
     test_graph();
 
-    cout << "--- APP TESTED ---" << endl;
+    cout << "\n\n --- APP TESTED ---" << "\n\n";
 }

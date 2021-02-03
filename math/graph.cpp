@@ -1,6 +1,8 @@
+#include <string>
+#include <vector>
 #include <iostream>
 #include <cstdlib>
-#include <string>
+
 #include "graph.h"
 #include "algebra.h"
 #include "number.h"
@@ -9,16 +11,11 @@ using namespace std;
 
 extern Number N_2, N_0;
 
-Range::Range(Number _start, Number _end)
-{
-    start = _start;
-    end = _end;
-}
+// init class methods
 Number Range::length()
 {
     return subtract(end, start);
 }
-
 bool Range::is_between(Number num, bool closed_start, bool closed_end)
 {
     bool left_side = (closed_start ? is_greater_equal(num, start) : is_greater(num, start)),
@@ -26,13 +23,7 @@ bool Range::is_between(Number num, bool closed_start, bool closed_end)
 
     return left_side && right_side;
 }
-
-Point::Point() {}
-Point::Point(Number _x, Number _y)
-{
-    x = _x;
-    y = _y;
-}
+// --------------
 
 string replace_x_with(string exp, string repl)
 {
@@ -43,13 +34,9 @@ string replace_x_with(string exp, string repl)
     return exp;
 }
 
-// expression contains 'x'
 void draw_graph(string expression, Range x_range, Number x_step, Range y_range, Number y_step)
 {
-    unsigned int points_c = 0,
-                 max_len = stoi(divide(x_range.length(), x_step, true).printable_string()) + 1;
-
-    Point points[max_len];
+    vector<Point> points;
 
     // extracting data
     for (Number x = x_range.start; is_smaller_equal(x, x_range.end); x = sum(x, x_step))
@@ -65,7 +52,7 @@ void draw_graph(string expression, Range x_range, Number x_step, Range y_range, 
                 y2 = get_answer(exp2);
 
             Number y_mean = divide(sum(y1, y2), N_2);
-            points[points_c++] = Point(x, y_mean);
+            points.push_back(Point(x, y_mean));
         }
         catch (...)
         {
@@ -80,7 +67,7 @@ void draw_graph(string expression, Range x_range, Number x_step, Range y_range, 
         for (Number x = x_range.start; is_smaller_equal(x, x_range.end); x = sum(x, x_step))
         {
             bool is_match = false;
-            for (unsigned i = 0; i < points_c; i++)
+            for (unsigned i = 0; i < points.size(); i++)
             {
                 if (are_equal(points[i].x, x) && line_range.is_between(points[i].y, false, true))
                 {

@@ -1,4 +1,5 @@
 #include <string>
+#include <vector>
 #include "algebra.h"
 #include "number.h"
 #include "functions.h"
@@ -7,41 +8,31 @@ using namespace std;
 
 extern Number E, P;
 
-MyTuple::MyTuple(string _value, long int _last_index, string fname)
+vector<string> get_arguments(string inside_pars)
 {
-    value = _value;
-    last_index = _last_index;
-    func_name = fname;
-}
-// TODO: seprate MyTuple from next_algebra & next_operator
-class Arguments
-{
-public:
-    string arg1, arg2;
+    vector<string> res;
 
-    Arguments(string _arg1 = "", string _arg2 = "")
-    {
-        arg1 = _arg1;
-        arg2 = _arg2;
-    }
-};
+    if (inside_pars == "")
+        return res;
 
-Arguments get_arguments(string inside_pars)
-{
     short int depth = 0;
-
-    for (unsigned i = 0; i < inside_pars.length(); i++)
+    unsigned last_cut = 0;
+    for (unsigned i = 0; i <= inside_pars.length(); i++)
     {
-        if (inside_pars[i] == '(')
+
+        if (i == inside_pars.length() || depth == 0 && inside_pars[i] == ',')
+        {
+            res.push_back(inside_pars.substr(last_cut, i - last_cut + 1));
+            last_cut = i + 1;
+        }
+
+        else if (inside_pars[i] == '(')
             depth++;
         else if (inside_pars[i] == ')')
             depth--;
-
-        else if (depth == 0 && inside_pars[i] == ',')
-            return Arguments(inside_pars.substr(0, i), inside_pars.substr(i + 1));
     }
 
-    return Arguments(inside_pars);
+    return res;
 }
 
 bool is_alphabet(char ch)
@@ -65,16 +56,11 @@ bool is_pure_number(string algebra)
     return true;
 }
 
-// ".ds." => "ds"
-string remove_around(string str)
-{
-    return str.substr(1, str.length() - 2);
-}
 // "43+(2)" => "43+(2)", "(2+2)" => "2+2"
 string remove_pars(string str)
 {
     if (str[0] == '(' && str[str.length() - 1] == ')')
-        str = remove_around(str);
+        str = str.substr(1, str.length() - 2);
 
     return str;
 }
@@ -89,24 +75,28 @@ Number get_var(string var_name)
     // TODO make all errors like this
     __throw_domain_error("the var is not exists");
 }
-Number calculate(string ope, Number n1, Number n2)
+Number calculate(char ope, Number n1, Number n2)
 {
-    if (ope == "+")
+    if (ope == '+')
         return sum(n1, n2);
 
-    else if (ope == "-")
+    else if (ope == '-')
         return subtract(n1, n2);
 
-    else if (ope == "*")
+    else if (ope == '*')
         return multiplicate(n1, n2);
 
-    else if (ope == "/")
+    else if (ope == '/')
         return divide(n1, n2);
 
-    else if (ope == "^")
+    else if (ope == '^')
         return pow(n1, n2);
 
-    else if (ope == "stick")
+    throw "not matched";
+}
+Number calculate(string ope, Number n1, Number n2)
+{
+    if (ope == "stick")
         return Number(n1.printable_string() + n2.printable_string());
 
     throw "not matched";
@@ -147,41 +137,33 @@ Number calculate(string func_name, Number n1)
     return get_var(func_name);
 }
 
-unsigned short int get_operator_priority(string ope)
+unsigned short int get_operator_priority(char ope)
 {
     /* Character   | Priority
        - +         | 1
        * /         | 2
        ^ func()    | 3 */
 
-    if (ope == "-" || ope == "+")
+    if (ope == '-' || ope == '+')
         return 1;
 
-    else if (ope == "*" || ope == "/")
+    else if (ope == '*' || ope == '/')
         return 2;
 
-    else if (ope == "^")
+    else if (ope == '^')
         return 3;
 
     throw "not matched";
 }
-MyTuple get_next_operator(string algebra)
-{
-    for (long int i = 0; i < algebra.length(); i++)
-        if (!is_numberic(algebra[i]))
-            return MyTuple(string(1, algebra[i]), i);
 
-    return MyTuple("none", -1);
-}
-
-MyTuple get_next_algebra(string algebra, short int last_operator_priority, bool is_first)
+NextAlgebraData get_next_algebra(string algebra, short int last_operator_priority, bool want_left_number)
 {
     long int i = 0;
     unsigned int
         depth = 0, // depth of pars
         pars = 0;  // how many pars exists in this expression (algebra)?
 
-    bool matched = false;
+    bool matched = false; // is any number matched so far?
     string funcname = "";
 
     for (; i < algebra.length(); i++)
@@ -216,7 +198,7 @@ MyTuple get_next_algebra(string algebra, short int last_operator_priority, bool 
 
                     i--;
                 }
-                // if there was more than 1 word, assume them as numbers
+                // if there was more than 1 word, assume they are numbers
                 else
                     funcname = "";
             }
@@ -227,8 +209,8 @@ MyTuple get_next_algebra(string algebra, short int last_operator_priority, bool 
                     // "---1" for example
                     if (is_sign(algebra[i]))
                     {
-                        if (is_first)
-                            return MyTuple("0", -1);
+                        if (want_left_number)
+                            return NextAlgebraData("0", -1);
 
                         continue;
                     }
@@ -238,7 +220,7 @@ MyTuple get_next_algebra(string algebra, short int last_operator_priority, bool 
                 }
                 else
                 {
-                    short int operator_priority = get_operator_priority(string(1, algebra[i]));
+                    short int operator_priority = get_operator_priority(algebra[i]);
 
                     if (operator_priority <= last_operator_priority)
                         break;
@@ -256,60 +238,56 @@ MyTuple get_next_algebra(string algebra, short int last_operator_priority, bool 
     if (depth != 0)
         throw "depth error";
 
-    // --------
+    bool is_function_call = (funcname != "" && pars == 1 && algebra[algebra.length() - 1] == ')'),
+         is_var_call = (funcname != "" && algebra.substr(0, i) == funcname);
 
-    bool is_function_call = (funcname != "" && pars == 1 && algebra[algebra.length() - 1] == ')');
-    bool is_var_call = (funcname != "" && algebra.substr(0, i) == funcname);
-    string scope;
+    string scope; // algebra inside the pars or itself
 
     if (is_function_call)
         scope = algebra.substr(funcname.length(), i - funcname.length());
-    else
+    else if (!is_var_call)
     {
-        if (!is_var_call)
-        {
-            funcname = "";
-            scope = algebra.substr(0, i);
-        }
+        funcname = "";
+        scope = algebra.substr(0, i);
     }
-    return MyTuple((pars == 1 ? remove_pars(scope) : scope), i - 1, funcname);
+
+    return NextAlgebraData((pars == 1 ? remove_pars(scope) : scope), i - 1, funcname);
 }
 
 Number get_answer(string algebra)
 {
-    MyTuple opera("none", -1);
+    char opera = '+';
     Number result;
     bool is_first = true;
 
     unsigned long int i = 0;
     while (i < algebra.length())
     {
-        MyTuple next_algebra = get_next_algebra(algebra.substr(i), (is_first ? 4 : get_operator_priority(opera.value)), is_first);
+        NextAlgebraData next_algebra = get_next_algebra(algebra.substr(i), (is_first ? 4 : get_operator_priority(opera)), is_first);
         Number next_result;
 
         if (next_algebra.func_name != "")
         {
-            Arguments args = get_arguments(next_algebra.value);
+            vector<string> args = get_arguments(next_algebra.value);
 
-            if (args.arg2 == "")
-                next_result = calculate(next_algebra.func_name, get_answer(args.arg1));
+            if (args.size() == 0)
+                next_result = get_var(next_algebra.func_name);
+            else if (args.size() == 1)
+                next_result = calculate(next_algebra.func_name, get_answer(args[0]));
             else
-                next_result = calculate(next_algebra.func_name, get_answer(args.arg1), get_answer(args.arg2));
+                next_result = calculate(next_algebra.func_name, get_answer(args[0]), get_answer(args[1]));
         }
         else if (is_pure_number(next_algebra.value))
             next_result = Number(next_algebra.value);
         else
             next_result = get_answer(next_algebra.value);
 
-        result = (is_first ? next_result : calculate(opera.value, result, next_result));
+        result = calculate(opera, result, next_result);
         i += next_algebra.last_index + 1;
 
-        opera = get_next_operator(algebra.substr(i));
+        opera = algebra[i];
 
-        if (opera.value == "none")
-            break;
-
-        i += opera.last_index + 1;
+        i++;
         is_first = false;
     }
 
