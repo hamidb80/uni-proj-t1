@@ -82,7 +82,7 @@ void draw_graph(string expression, Range x_range, Number x_step, Range y_range, 
             bool is_match = false;
             for (unsigned i = 0; i < points_c; i++)
             {
-                if (are_equal(points[i].x, x) && line_range.is_between(points[i].y, true, false))
+                if (are_equal(points[i].x, x) && line_range.is_between(points[i].y, false, true))
                 {
                     is_match = true;
                     break;

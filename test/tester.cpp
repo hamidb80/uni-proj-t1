@@ -280,6 +280,21 @@ void test_number()
             "4.5");
 
         error_if_were_not_equal(
+            "-2 * 3",
+            multiplicate(Number("-2"), Number("3")).printable_string(),
+            "-6");
+
+        error_if_were_not_equal(
+            "2 * -3",
+            multiplicate(Number("2"), Number("-3")).printable_string(),
+            "-6");
+
+        error_if_were_not_equal(
+            "-2 * -3",
+            multiplicate(Number("-2"), Number("-3")).printable_string(),
+            "6");
+
+        error_if_were_not_equal(
             "17 * 0.1",
             multiplicate(Number("17"), Number("0.1")).printable_string(),
             "1.7");
@@ -579,10 +594,10 @@ void test_functions()
             true);
 
         error_if_were_not_equal(
-            "sin(3.14)",
+            "sin(3.14)=> " + sin(Number("3.14")).printable_string() + " != " + N_0.printable_string(),
             are_approxiamtly_equal(
                 sin(Number("3.14")), N_0,
-                Number("0.01")),
+                Number("0.05")),
             true);
 
         error_if_were_not_equal(
@@ -807,9 +822,9 @@ void test_graph()
     // draw_graph("x", x_r, Number("1"), y_r, Number("1"));
 
     Range y_r(Number("-2"), Number("2")),
-        x_r(Number("0"), Number("6"));
+        x_r(Number("-2"), Number("6"));
 
-    draw_graph("tan(x)", x_r, Number("0.1"), y_r, Number("0.1"));
+    draw_graph("abs(x-1)", x_r, Number("0.5"), y_r, Number("0.5"));
 }
 void test_entire_app()
 {

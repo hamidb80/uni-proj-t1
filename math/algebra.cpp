@@ -277,7 +277,7 @@ MyTuple get_next_algebra(string algebra, short int last_operator_priority, bool 
 
 Number get_answer(string algebra)
 {
-    MyTuple opera("@", -1);
+    MyTuple opera("none", -1);
     Number result;
     bool is_first = true;
 

@@ -14,7 +14,7 @@ Number pow(Number base, Number num)
 
     Number res = N_1, i = N_1;
 
-    for (; !is_greater(i, num); i = sum(i, N_1))
+    for (; is_smaller_equal(i, num); i = sum(i, N_1))
         res = multiplicate(res, base);
 
     return res;

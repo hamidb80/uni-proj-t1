@@ -1,13 +1,12 @@
 #include <string>
+#include <vector>
 #include <cstdlib>
 #include "number.h"
 
 using namespace std;
 
-// TODO: cache `int length` value
-
 Number
-    P("3.14159"),
+    P( "3.14159"),
     P2("6.28318"),
 
     E("2.71828"),
@@ -20,14 +19,12 @@ Number
 Number::Number()
 {
     float_point_i = MAX_DIGITS - 1;
-    base = "10";
     sign = 1;
 }
-Number::Number(string str_num, string _base)
+// -923 => sign:0, str_num: 923
+// FIXME: -0 for 0 * -32
+Number::Number(string str_num)
 {
-    base = _base;
-
-    // -923 => sign:0, str_num: 923
     sign = str_num[0] != '-';
     if (sign == 0)
         str_num = str_num.substr(1);
@@ -43,12 +40,6 @@ Number::Number(string str_num, string _base)
 
     for (unsigned int i = 0; i < str_num.length(); i++)
         digits[MAX_DIGITS - (i + 1)] = (int)str_num[str_num.length() - (1 + i)] - 48;
-}
-
-DivRes::DivRes(Number _qoutient, Number _reminder)
-{
-    qoutient = _qoutient;
-    reminder = _reminder;
 }
 
 // methods
@@ -105,8 +96,17 @@ void Number::clean_float()
     shift_digits_for(-should_shift_backward);
     float_point_i += should_shift_backward;
 }
+void Number::remove_float_after(short int num)
+{
+    if (float_length() > num)
+    {
+        shift_digits_for(num - float_length());
+        float_point_i -= num - float_length();
+    }
+}
 string Number::printable_string()
 {
+    remove_float_after();
     clean_float();
 
     string str_num = "";
@@ -304,12 +304,14 @@ Number divide(Number dividend, Number divisor, bool int_div)
             DivRes division = simple_divide(splited_dividend, divisor);
             qoutient_strnum.append(division.qoutient.printable_string());
 
-            remainder = multiplicate(division.reminder, N_10);
+            remainder = division.reminder;
             last_cut_index += digits_to_cut;
             digits_to_cut = 0;
         }
         else
             qoutient_strnum.append("0");
+        
+        remainder = multiplicate(remainder, N_10);
 
         digits_to_cut += 1;
     }
@@ -318,7 +320,7 @@ Number divide(Number dividend, Number divisor, bool int_div)
     res.sign = result_sign;
     return res;
 }
-// 13/4 => 3, 12/4 => 3
+// 13/4 => 3, 12/4 => 3 uses for small divisions that thier answers is between 0 & 10
 DivRes simple_divide(Number dividend, Number divisor)
 {
     Number qoutient = N_0;
@@ -329,11 +331,38 @@ DivRes simple_divide(Number dividend, Number divisor)
         qoutient = sum(qoutient, N_1);
     }
 
-    return DivRes(qoutient, dividend);
+    return DivRes{.qoutient=qoutient, .reminder=dividend};
 }
 
 // comparation
-// -- checks which one is greater (only with respect to their absolute value)
+// -- checks which one is greater with (ignores their signs)
+bool are_equal(Number n1, Number n2)
+{
+    unsigned int
+        n1_len = n1.int_length(),
+        n2_len = n2.int_length();
+
+    if (n1_len != n2_len || n1.sign != n2.sign)
+        return false;
+
+    sync_float_points(n1, n2);
+
+    n1_len += n1.float_length();
+    n2_len += n2.float_length();
+
+    if (n1_len == n2_len)
+        for (unsigned int i = 0; i < n1_len; i++)
+        {
+            short int
+                n1_digit = n1.digits[MAX_DIGITS - (n1_len) + i],
+                n2_digit = n2.digits[MAX_DIGITS - (n2_len) + i];
+
+            if (n1_digit != n2_digit)
+                return false;
+        }
+
+    return true;
+}
 bool is_greater(Number n1, Number n2)
 {
     if (n1.sign != n2.sign)
@@ -366,42 +395,15 @@ bool is_greater(Number n1, Number n2)
 
             if (n1_digit != n2_digit)
             {
+                // if they were positive
                 if (n1.sign)
                     return n1_digit > n2_digit;
-                // if they were negetive
                 else
                     return n1_digit < n2_digit;
             }
         }
 
     return false;
-}
-bool are_equal(Number n1, Number n2)
-{
-    unsigned int
-        n1_len = n1.int_length(),
-        n2_len = n2.int_length();
-
-    if (n1_len != n2_len || n1.sign != n2.sign)
-        return false;
-
-    sync_float_points(n1, n2);
-
-    n1_len += n1.float_length();
-    n2_len += n2.float_length();
-
-    if (n1_len == n2_len)
-        for (unsigned int i = 0; i < n1_len; i++)
-        {
-            short int
-                n1_digit = n1.digits[MAX_DIGITS - (n1_len) + i],
-                n2_digit = n2.digits[MAX_DIGITS - (n2_len) + i];
-
-            if (n1_digit != n2_digit)
-                return false;
-        }
-
-    return true;
 }
 bool is_smaller_equal(Number n1, Number n2)
 {

@@ -27,15 +27,14 @@ public:
     short int digits[MAX_DIGITS] = {0};
     // 6 -> the float point is between 6th & 7th index of digits
     unsigned int float_point_i;
-    string base; // <number> | rad | deg | grad
     bool sign;   // 0 for -, 1 for +
 
     Number();
-    Number(string str_num, string _base = "10");
+    Number(string str_num);
 
     // digits: 12 indexes: 2 => 1200, digits: 12 indexes: -1 => 1
     void shift_digits_for(int indexes);
-    void remove_float_after(short int num);
+    void remove_float_after(short int num = FLOAT_CLEAR_AFTER);
 
     long int int_length();
     long int float_length();
@@ -48,7 +47,6 @@ public:
 struct DivRes
 {
     Number qoutient, reminder;
-    DivRes(Number _qoutient, Number _reminder);
 };
 
 // --- operations

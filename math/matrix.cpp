@@ -59,7 +59,7 @@ Matrix multiplicate(Matrix m1, Matrix m2)
     {
         for (int x = 0; x < m2.columns; x++)
         {
-            Number _sum("0", "10");
+            Number _sum("0");
 
             for (int c = 0; c < m1.columns; c++)
                 _sum = sum(_sum, multiplicate(
