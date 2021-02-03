@@ -60,7 +60,7 @@ long int Number::int_length()
 void Number::shift_digits_for(int shift_number)
 {
     // shift indexes backward for `shift_number`
-    for (unsigned int i = 0; i < abs(shift_number); i++)
+    for (unsigned i = 0; i < abs(shift_number); i++)
         if (shift_number > 0)
             digits.push_back(0);
         else
@@ -70,17 +70,17 @@ void Number::shift_digits_for(int shift_number)
 void Number::clean()
 {
     int floats_to_remove = 0;
-    for (unsigned int i = digits.size() - 1; i >= float_point_i; i--)
+    for (unsigned i = digits.size() - 1; i >= float_point_i; i--)
     {
         if (digits[i] == 0)
-            floats_to_remove ++;
+            floats_to_remove++;
         else
             break;
     }
     digits.erase(digits.end() - floats_to_remove, digits.end());
 
     int digits_to_remove = 0;
-    for (unsigned int i = 0; i < float_point_i - 1; i++)
+    for (unsigned i = 0; i < float_point_i - 1; i++)
     {
         if (digits[i] == 0)
             digits_to_remove++;
@@ -108,7 +108,7 @@ string Number::raw_string()
 {
 
     string str_num = "";
-    for (unsigned int i = 0; i < digits.size(); i++)
+    for (unsigned i = 0; i < digits.size(); i++)
         str_num.append(to_string(digits[i]));
 
     if (float_point_i < digits.size())
@@ -209,35 +209,37 @@ Number subtract(Number n1, Number n2)
 }
 Number multiplicate(Number n1, Number n2)
 {
-    Number n3;
+    unsigned
+        n1_len = n1.digits.size(),
+        n2_len = n2.digits.size();
 
-    unsigned int
-        n1_len = n1.int_length() + n1.float_length(),
-        n2_len = n2.int_length() + n2.float_length();
+    Number n3;
+    n3.digits.insert(n3.digits.begin(), n1_len + n2_len - 1, 0);
 
     // multipicate & put summation in result index [digits can be more than 9]
-    for (unsigned int i = 0; i < n1_len; i++)
+    for (int i = n1_len - 1; i >= 0; i--)
     {
-        unsigned int n1_digit = n1.digits[MAX_DIGITS - (i + 1)];
+        unsigned n1_digit = n1.digits[i];
         if (n1_digit == 0)
             continue;
 
-        for (unsigned int j = 0; j < n2_len; j++)
+        for (int j = n2_len - 1; j >= 0; j--)
         {
-            unsigned int n2_digit = n2.digits[MAX_DIGITS - (j + 1)];
+            unsigned n2_digit = n2.digits[j];
             if (n2_digit == 0)
                 continue;
 
-            n3.digits[MAX_DIGITS - (i + j + 1)] += n1_digit * n2_digit;
+            n3.digits[i + j + 1] += n1_digit * n2_digit;
         }
     }
 
     // collect & correct indexes which contain digits greater than 9
-    unsigned int n3_len = n3.int_length() + n3.float_length();
-    unsigned int carry = 0;
-    for (unsigned int i = 0; (i < n3_len) || (carry != 0); i++)
+    unsigned n3_len = n3.digits.size(),
+             carry = 0;
+
+    for (int i = n3_len - 1; i >= 0; i--)
     {
-        unsigned int digit = n3.digits[MAX_DIGITS - (i + 1)] + carry;
+        unsigned digit = n3.digits[i] + carry;
         if (digit >= 10)
         {
             carry = digit / 10;
@@ -246,14 +248,14 @@ Number multiplicate(Number n1, Number n2)
         else
             carry = 0;
 
-        n3.digits[MAX_DIGITS - (i + 1)] = digit;
+        n3.digits[i] = digit;
     }
 
-    n3.float_point_i = MAX_DIGITS - (n1.float_length() + n2.float_length() + 1);
-    n3.sign = n1.sign == n2.sign;
+    n3.float_point_i = n3_len - (n1.float_length() + n2.float_length());
+    n3.sign = (n1.sign == n2.sign);
     return n3;
 }
-Number divide(Number dividend, Number divisor, bool int_div)
+Number divide(Number dividend, Number divisor, bool is_int_div)
 {
     if (are_equal(divisor, N_0))
         throw "division by zero";
@@ -263,39 +265,42 @@ Number divide(Number dividend, Number divisor, bool int_div)
 
     // delta float point length
     long int dfl = dividend.float_length() - divisor.float_length();
-    dividend.float_point_i = divisor.float_point_i = MAX_DIGITS - 1;
 
     if (dfl > 0)
         divisor.shift_digits_for(dfl);
     else if (dfl < 0)
         dividend.shift_digits_for(-dfl);
+        
+    dividend.float_point_i = dividend.digits.size();
+    divisor.float_point_i = divisor.digits.size();
 
-    long int dividend_len = dividend.int_length(),
-             divisor_len = divisor.int_length();
+    long int dividend_len = dividend.digits.size(),
+             divisor_len = divisor.digits.size();
 
     Number remainder;
     string qoutient_strnum = "";
     short int digits_after_point = 0;
-    long int last_cut_index = MAX_DIGITS - dividend_len,
-             digits_to_cut = std::min(dividend_len, divisor_len);
+    long int last_cut_index = 0,
+             digits_to_cut = min(dividend_len, divisor_len);
 
     while (true)
     {
-        if (last_cut_index + digits_to_cut > MAX_DIGITS)
+        if (last_cut_index + digits_to_cut > dividend_len)
         {
             if ((are_equal(remainder, N_0) && !is_greater(divisor, dividend)) ||
-                digits_after_point == FLOAT_CLEAR_AFTER || int_div)
+                digits_after_point == FLOAT_CLEAR_AFTER || is_int_div)
                 break;
 
             if (digits_after_point == 0)
                 qoutient_strnum.append(".");
 
             dividend = multiplicate(dividend, N_10);
-            last_cut_index -= 1;
+            last_cut_index += 1;
             digits_after_point += 1;
         }
 
-        Number splited_dividend = sum(split_digits(dividend, last_cut_index, last_cut_index + digits_to_cut), remainder);
+        Number splited_dividend = sum(
+            split_digits(dividend, last_cut_index, last_cut_index + digits_to_cut), remainder);
 
         if (!is_greater(divisor, splited_dividend))
         {
@@ -310,7 +315,6 @@ Number divide(Number dividend, Number divisor, bool int_div)
             qoutient_strnum.append("0");
 
         remainder = multiplicate(remainder, N_10);
-
         digits_to_cut += 1;
     }
 
@@ -344,7 +348,7 @@ bool are_equal(Number n1, Number n2)
 
     sync_num(n1, n2);
 
-    for (unsigned int i = 0; i < n1.digits.size(); i++)
+    for (unsigned i = 0; i < n1.digits.size(); i++)
         if (n1.digits[i] != n2.digits[i])
             return false;
 
@@ -369,7 +373,7 @@ bool is_greater(Number n1, Number n2)
 
     sync_num(n1, n2);
 
-    for (unsigned int i = 0; i < n1.digits.size(); i++)
+    for (unsigned i = 0; i < n1.digits.size(); i++)
     {
         short int
             n1_digit = n1.digits[i],
