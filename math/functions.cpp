@@ -8,7 +8,7 @@ const short int
 
 Number pow(Number base, Number num)
 {
-    num.clean_float();
+    num.clean();
     if (num.float_length() != 0)
         throw "power function: number must be integer";
 
@@ -21,7 +21,7 @@ Number pow(Number base, Number num)
 }
 Number fact(Number num)
 {
-    num.clean_float();
+    num.clean();
     if (num.float_length() != 0)
         throw "fact function: value must be an integer";
 

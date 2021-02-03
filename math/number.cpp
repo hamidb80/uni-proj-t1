@@ -7,95 +7,88 @@
 using namespace std;
 
 Number
-    P( "3.14159"),
+    P("3.14159"),
     P2("6.28318"),
-
     E("2.71828"),
 
     N_0("0"), N_1("1"),
     _N_1("-1"),
     N_2("2"), N_10("10");
 
+short int char2digit(char ch)
+{
+    return ch - '0';
+}
+
 // constructors
+// FIXME: -0 for 0 * -32
 Number::Number()
 {
-    float_point_i = MAX_DIGITS - 1;
+    digits.push_back(0);
+    float_point_i = 1;
     sign = 1;
 }
-// -923 => sign:0, str_num: 923
-// FIXME: -0 for 0 * -32
 Number::Number(string str_num)
 {
     sign = str_num[0] != '-';
+
     if (sign == 0)
         str_num = str_num.substr(1);
 
     long int fpi = str_num.find('.');
     if (fpi == -1)
-        float_point_i = MAX_DIGITS - 1;
+        float_point_i = str_num.length();
     else
     {
-        float_point_i = (MAX_DIGITS - ((str_num.length() - (1 + fpi)) + 1));
+        float_point_i = fpi;
         str_num.replace(fpi, 1, "");
     }
 
-    for (unsigned int i = 0; i < str_num.length(); i++)
-        digits[MAX_DIGITS - (i + 1)] = (int)str_num[str_num.length() - (1 + i)] - 48;
+    for (long int i = 0; i < str_num.length(); i++)
+        digits.push_back(char2digit(str_num[i]));
 }
 
 // methods
-long int Number::int_length()
-{
-    unsigned int first_non_zero_number_i = float_point_i;
-    for (unsigned int i = 0; i < MAX_DIGITS && i <= float_point_i; i++)
-        if (digits[i] != 0)
-        {
-            first_non_zero_number_i = i;
-            break;
-        }
-
-    return (MAX_DIGITS - first_non_zero_number_i) - float_length();
-}
 long int Number::float_length()
 {
-    return MAX_DIGITS - (float_point_i + 1);
+    return (long int)digits.size() - (long int)float_point_i;
+}
+long int Number::int_length()
+{
+    return (long int)digits.size() - float_length();
 }
 void Number::shift_digits_for(int shift_number)
 {
-    unsigned int len = int_length() + float_length();
-
-    if (shift_number > 0)
-    {
-        // shift indexes backward for `shift_number`
-        for (unsigned int i = len; i > 0; i--)
-            digits[MAX_DIGITS - (i + shift_number)] = digits[MAX_DIGITS - (i)];
-
-        // clear the rest
-        for (unsigned int i = 0; i < shift_number; i++)
-            digits[MAX_DIGITS - (i + 1)] = 0;
-    }
-
-    else if (shift_number < 0)
-    {
-        // shift indexes forward `shift_number`
-        for (unsigned int i = 0; i < len; i++)
-            digits[MAX_DIGITS - (i + 1)] = digits[MAX_DIGITS - (-shift_number + i + 1)];
-    }
+    // shift indexes backward for `shift_number`
+    for (unsigned int i = 0; i < abs(shift_number); i++)
+        if (shift_number > 0)
+            digits.push_back(0);
+        else
+            digits.pop_back();
 }
-// 0.546000 => 0.546
-void Number::clean_float()
+// 00.546000 => 0.546
+void Number::clean()
 {
-    int should_shift_backward = 0;
-    for (unsigned int i = MAX_DIGITS - 1; i > float_point_i; i--)
+    int floats_to_remove = 0;
+    for (unsigned int i = digits.size() - 1; i >= float_point_i; i--)
     {
         if (digits[i] == 0)
-            should_shift_backward++;
+            floats_to_remove ++;
         else
             break;
     }
+    digits.erase(digits.end() - floats_to_remove, digits.end());
 
-    shift_digits_for(-should_shift_backward);
-    float_point_i += should_shift_backward;
+    int digits_to_remove = 0;
+    for (unsigned int i = 0; i < float_point_i - 1; i++)
+    {
+        if (digits[i] == 0)
+            digits_to_remove++;
+        else
+            break;
+    }
+    digits.erase(digits.begin(), digits.begin() + digits_to_remove);
+    float_point_i -= digits_to_remove;
 }
 void Number::remove_float_after(short int num)
 {
@@ -108,19 +101,18 @@ void Number::remove_float_after(short int num)
 string Number::printable_string()
 {
     remove_float_after();
-    clean_float();
+    clean();
+    return raw_string();
+}
+string Number::raw_string()
+{
 
     string str_num = "";
-    unsigned int len = int_length() + float_length();
+    for (unsigned int i = 0; i < digits.size(); i++)
+        str_num.append(to_string(digits[i]));
 
-    for (unsigned int i = 0; i < len; i++)
-        str_num = to_string(digits[MAX_DIGITS - (i + 1)]) + str_num;
-
-    if (float_point_i != MAX_DIGITS - 1)
-    {
-        unsigned int offset_from_end = MAX_DIGITS - (1 + float_point_i);
-        str_num.insert(str_num.length() - (offset_from_end), ".");
-    }
+    if (float_point_i < digits.size())
+        str_num.insert(float_point_i, ".");
 
     return (sign == 0 ? "-" : "") + str_num;
 }
@@ -128,8 +120,6 @@ string Number::printable_string()
 // operations
 Number sum(Number n1, Number n2)
 {
-    Number res;
-
     // do subtraction if their signes arn't the same
     if (n1.sign == false)
     {
@@ -138,7 +128,7 @@ Number sum(Number n1, Number n2)
         if (n2.sign == false)
         {
             n2.sign = true;
-            res = sum(n2, n1);
+            Number res = sum(n2, n1);
             res.sign = false;
             return res;
         }
@@ -151,17 +141,23 @@ Number sum(Number n1, Number n2)
         return subtract(n1, n2);
     }
 
-    sync_float_points(n1, n2);
+    Number res;
+    sync_num(n1, n2);
+    sync_num(n1, res);
 
+    res.digits.insert(res.digits.begin(), 1, 0);
+    res.float_point_i++;
+
+    int num_len = n1.digits.size();
     short int carry = 0;
-    for (unsigned int i = 0; i < MAX_DIGITS; i++)
+    for (int i = num_len - 1; i >= 0; i--)
     {
-        short int temp_sum = n1.digits[MAX_DIGITS - (i + 1)] + n2.digits[MAX_DIGITS - (i + 1)] + carry;
-        res.digits[MAX_DIGITS - (i + 1)] = temp_sum % 10;
+        short int temp_sum = n1.digits[i] + n2.digits[i] + carry;
+        res.digits[i + 1] = temp_sum % 10;
         carry = temp_sum / 10;
     }
+    res.digits[0] = carry;
 
-    res.float_point_i = n2.float_point_i;
     res.sign = n1.sign;
     return res;
 }
@@ -183,7 +179,8 @@ Number subtract(Number n1, Number n2)
         return sum(n1, n2);
     }
 
-    sync_float_points(n1, n2);
+    sync_num(n1, n2);
+    sync_num(res, n2);
 
     // n1 always contains the larger number
     if (is_greater(n2, n1))
@@ -193,9 +190,9 @@ Number subtract(Number n1, Number n2)
     }
 
     short int carry = 0;
-    for (unsigned int i = 0; i < MAX_DIGITS; i++)
+    for (int i = n1.digits.size() - 1; i >= 0; i--)
     {
-        short int temp_minus = n1.digits[MAX_DIGITS - (i + 1)] - n2.digits[MAX_DIGITS - (i + 1)] + carry;
+        short int temp_minus = n1.digits[i] - n2.digits[i] + carry;
 
         carry = 0;
         while (temp_minus < 0)
@@ -204,7 +201,7 @@ Number subtract(Number n1, Number n2)
             carry -= 1;
         }
 
-        res.digits[MAX_DIGITS - (i + 1)] = temp_minus;
+        res.digits[i] = temp_minus;
     }
 
     res.float_point_i = n1.float_point_i;
@@ -311,7 +308,7 @@ Number divide(Number dividend, Number divisor, bool int_div)
         }
         else
             qoutient_strnum.append("0");
-        
+
         remainder = multiplicate(remainder, N_10);
 
         digits_to_cut += 1;
@@ -332,35 +329,24 @@ DivRes simple_divide(Number dividend, Number divisor)
         qoutient = sum(qoutient, N_1);
     }
 
-    return DivRes{.qoutient=qoutient, .reminder=dividend};
+    return DivRes{.qoutient = qoutient, .reminder = dividend};
 }
 
 // comparation
-// -- checks which one is greater with (ignores their signs)
+// -- checks which one is greater
 bool are_equal(Number n1, Number n2)
 {
-    unsigned int
-        n1_len = n1.int_length(),
-        n2_len = n2.int_length();
+    n1.clean();
+    n2.clean();
 
-    if (n1_len != n2_len || n1.sign != n2.sign)
+    if (n1.int_length() != n2.int_length() || n1.sign != n2.sign)
         return false;
 
-    sync_float_points(n1, n2);
+    sync_num(n1, n2);
 
-    n1_len += n1.float_length();
-    n2_len += n2.float_length();
-
-    if (n1_len == n2_len)
-        for (unsigned int i = 0; i < n1_len; i++)
-        {
-            short int
-                n1_digit = n1.digits[MAX_DIGITS - (n1_len) + i],
-                n2_digit = n2.digits[MAX_DIGITS - (n2_len) + i];
-
-            if (n1_digit != n2_digit)
-                return false;
-        }
+    for (unsigned int i = 0; i < n1.digits.size(); i++)
+        if (n1.digits[i] != n2.digits[i])
+            return false;
 
     return true;
 }
@@ -369,40 +355,35 @@ bool is_greater(Number n1, Number n2)
     if (n1.sign != n2.sign)
         return n1.sign;
 
-    unsigned int
-        n1_len = n1.int_length(),
-        n2_len = n2.int_length();
+    n1.clean();
+    n2.clean();
 
-    if (n1_len != n2_len)
+    if (n1.int_length() != n2.int_length())
     {
         // if they were positive
         if (n1.sign)
-            return n1_len > n2_len;
+            return n1.int_length() > n2.int_length();
         else
-            return n2_len > n1_len;
+            return n2.int_length() > n1.int_length();
     }
 
-    sync_float_points(n1, n2);
+    sync_num(n1, n2);
 
-    n1_len += n1.float_length();
-    n2_len += n2.float_length();
+    for (unsigned int i = 0; i < n1.digits.size(); i++)
+    {
+        short int
+            n1_digit = n1.digits[i],
+            n2_digit = n2.digits[i];
 
-    if (n1_len == n2_len)
-        for (unsigned int i = 0; i < n1_len; i++)
+        if (n1_digit != n2_digit)
         {
-            short int
-                n1_digit = n1.digits[MAX_DIGITS - (n1_len) + i],
-                n2_digit = n2.digits[MAX_DIGITS - (n2_len) + i];
-
-            if (n1_digit != n2_digit)
-            {
-                // if they were positive
-                if (n1.sign)
-                    return n1_digit > n2_digit;
-                else
-                    return n1_digit < n2_digit;
-            }
+            // if they were positive
+            if (n1.sign)
+                return n1_digit > n2_digit;
+            else
+                return n1_digit < n2_digit;
         }
+    }
 
     return false;
 }
@@ -418,6 +399,7 @@ bool is_greater_equal(Number n1, Number n2)
 {
     return is_smaller_equal(n2, n1);
 }
+
 // other functionalities
 void sync_float_points(Number &n1, Number &n2)
 {
@@ -425,15 +407,34 @@ void sync_float_points(Number &n1, Number &n2)
     long int dfl = n1.float_length() - n2.float_length();
 
     if (dfl > 0)
-    {
         n2.shift_digits_for(dfl);
-        n2.float_point_i -= dfl;
-    }
     else if (dfl < 0)
-    {
         n1.shift_digits_for(-dfl);
-        n1.float_point_i -= -dfl;
+}
+void sync_int(Number &n1, Number &n2)
+{
+    // delta int length
+    long int dil = n1.int_length() - n2.int_length();
+
+    if (dil > 0)
+    {
+        for (unsigned i = 0; i < dil; i++)
+            n2.digits.insert(n2.digits.begin(), 1, 0);
+
+        n2.float_point_i += dil;
     }
+    else if (dil < 0)
+    {
+        for (unsigned i = 0; i < -dil; i++)
+            n1.digits.insert(n1.digits.begin(), 1, 0);
+
+        n1.float_point_i += -dil;
+    }
+}
+void sync_num(Number &n1, Number &n2)
+{
+    sync_float_points(n1, n2);
+    sync_int(n1, n2);
 }
 Number split_digits(Number n1, long int from, long int to)
 {

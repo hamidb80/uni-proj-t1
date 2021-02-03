@@ -49,12 +49,12 @@ void test_number()
             Number("30").float_length(), 0);
 
         error_if_were_not_equal(
-            "float len of 30",
+            "float len of 30.0",
             Number("30.0").float_length(), 1);
 
         error_if_were_not_equal(
             "float len of 30.",
-            Number("30.1").float_length(), 1);
+            Number("30.").float_length(), 0);
 
         error_if_were_not_equal(
             "float len of 30.123",
@@ -70,12 +70,16 @@ void test_number()
             Number("0546").printable_string(), "546");
 
         error_if_were_not_equal(
+            "-008",
+            Number("-008").printable_string(), "-8");
+
+        error_if_were_not_equal(
             "0.11",
             Number("0.11").printable_string(), "0.11");
 
         error_if_were_not_equal(
-            "12.46600",
-            Number("12.46600").printable_string(), "12.466");
+            "012.46600",
+            Number("012.46600").printable_string(), "12.466");
 
         // shift_digits_for
         Number num45("45");
@@ -84,14 +88,17 @@ void test_number()
 
         error_if_were_not_equal(
             old_num + " shift for 2 indexes",
-            num45.printable_string(), "4500");
+            num45.raw_string(), "45.00");
 
         string new_num_str = num45.printable_string();
+
+        num45 = Number("4500");
         num45.shift_digits_for(-2);
+        num45.float_point_i -= 2;
 
         error_if_were_not_equal(
             new_num_str + " shift for -2 indexes",
-            num45.printable_string(), "45");
+            num45.raw_string(), "45");
 
         // remove_float_after
         Number num63("63");
@@ -100,7 +107,7 @@ void test_number()
         error_if_were_not_equal(
             "remove float after 2 for 63" + num63.printable_string(),
             num63.printable_string(), "63");
-        
+
         // --------------------
         Number num63_1("63.1");
         num63_1.remove_float_after(2);
@@ -118,6 +125,7 @@ void test_number()
             num2_4654.printable_string(), "2.46");
     }
     { // comparation
+
         // greater
         error_if_were_not_equal(
             "999 > 999",
@@ -243,6 +251,44 @@ void test_number()
             is_smaller_equal(Number("999"), Number("991")),
             false);
     }
+    { // sync
+
+        // float
+        Number num12("12"), num790("790");
+        sync_int(num12, num790);
+
+        error_if_were_not_equal(
+            "12 int sync 790: ",
+            num12.raw_string(), "012");
+
+        error_if_were_not_equal(
+            "12 int sync 790: ",
+            num790.raw_string(), "790");
+
+        // int
+        Number num197("197.41"), num7("7.0104");
+        sync_float_points(num197, num7);
+
+        error_if_were_not_equal(
+            "197.41 float sync 7.0104",
+            num197.raw_string(), "197.4100");
+
+        error_if_were_not_equal(
+            "197.41 float sync 7.0104",
+            num7.raw_string(), "7.0104");
+
+        // float & int
+        Number num0_130("0.130"), num86_4("86.4");
+        sync_num(num0_130, num86_4);
+
+        error_if_were_not_equal(
+            "0.130 sync 86.4",
+            num0_130.raw_string(), "00.130");
+
+        error_if_were_not_equal(
+            "0.130 sync 86.4",
+            num86_4.raw_string(), "86.400");
+    }
     { // summation
         error_if_were_not_equal(
             "991 + 999 ",
@@ -251,8 +297,8 @@ void test_number()
 
         error_if_were_not_equal(
             "991 + 00",
-            sum(Number("999"), Number("0")).printable_string(),
-            "999");
+            sum(Number("991"), Number("00")).printable_string(),
+            "991");
 
         error_if_were_not_equal(
             "999 + 999",

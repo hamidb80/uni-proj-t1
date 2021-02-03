@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include <vector>
 
 using namespace std;
 
@@ -24,7 +25,7 @@ class Number
     */
 
 public:
-    short int digits[MAX_DIGITS] = {0};
+    vector<short int> digits;
     // 6 -> the float point is between 6th & 7th index of digits
     unsigned int float_point_i;
     bool sign;   // 0 for -, 1 for +
@@ -40,8 +41,9 @@ public:
     long int float_length();
 
     // 4.0546000 => 4.0546
-    void clean_float();
+    void clean();
     string printable_string();
+    string raw_string();
 };
 
 struct DivRes
@@ -65,4 +67,6 @@ bool is_greater_equal(Number n1, Number n2);
 
 // --- other functions
 void sync_float_points(Number &n1, Number &n2);
+void sync_int(Number &n1, Number &n2);
+void sync_num(Number &n1, Number &n2);
 Number split_digits(Number n1, long int from, long int to);
