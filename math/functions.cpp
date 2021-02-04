@@ -45,9 +45,8 @@ Number floor(Number num)
     if (num.float_length() != 0 && num.sign == false)
         num = subtract(num, N_1);
 
-    // FIXME: becuase float_length() return type is unsigned integer, this probably overflows
     num.shift_digits_for(-num.float_length());
-    num.float_point_i = MAX_DIGITS - 1;
+    num.float_point_i = num.digits.size();
 
     return num;
 }
@@ -57,9 +56,8 @@ Number ceil(Number num)
     if (num.float_length() != 0 && num.sign == true)
         num = sum(num, N_1);
 
-    // FIXME: becuase float_length() return type is unsigned integer, this probably overflows
     num.shift_digits_for(-num.float_length());
-    num.float_point_i = MAX_DIGITS - 1;
+    num.float_point_i = num.digits.size();
 
     return num;
 }
@@ -68,6 +66,11 @@ Number mod(Number dividend, Number divisor)
     return subtract(dividend, multiplicate(
                                   divide(dividend, divisor, true),
                                   divisor));
+}
+
+Number radical(Number base, Number num)
+{
+    return base;
 }
 Number ln(Number n)
 {
@@ -85,10 +88,6 @@ Number ln(Number n)
 Number log(Number base, Number num)
 {
     return divide(ln(num), ln(base));
-}
-Number radical(Number base, Number num)
-{
-    return base;
 }
 
 Number sin(Number rad)

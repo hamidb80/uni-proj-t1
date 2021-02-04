@@ -135,7 +135,7 @@ Number calculate(string func_name, Number n1)
     else if (func_name == "coth")
         return coth(n1);
 
-    return get_var(func_name);
+    throw "not matched";
 }
 
 unsigned short int get_operator_priority(char ope)

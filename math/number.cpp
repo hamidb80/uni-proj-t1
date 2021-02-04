@@ -11,8 +11,8 @@ Number
     P2("6.28318"),
     E("2.71828"),
 
-    N_0("0"), N_1("1"),
-    _N_1("-1"),
+    N_0("0"),
+    N_1("1"), _N_1("-1"),
     N_2("2"), N_10("10");
 
 short int char2digit(char ch)
@@ -21,7 +21,6 @@ short int char2digit(char ch)
 }
 
 // constructors
-// FIXME: -0 for 0 * -32
 Number::Number()
 {
     digits.push_back(0);
@@ -57,20 +56,20 @@ long int Number::int_length()
 {
     return (long int)digits.size() - float_length();
 }
-void Number::shift_digits_for(int shift_number)
+
+void Number::shift_digits_for(long int shift_number)
 {
-    // shift indexes backward for `shift_number`
-    for (unsigned i = 0; i < abs(shift_number); i++)
-        if (shift_number > 0)
-            digits.push_back(0);
-        else
-            digits.pop_back();
+    // shift number backward/forward
+
+    if (shift_number > 0)
+        digits.insert(digits.end(), shift_number, 0);
+    else
+        digits.erase(digits.end() + shift_number, digits.end());
 }
-// 00.546000 => 0.546
 void Number::clean()
 {
-    int floats_to_remove = 0;
-    for (unsigned i = digits.size() - 1; i >= float_point_i; i--)
+    long int floats_to_remove = 0;
+    for (long int i = digits.size() - 1; i >= float_point_i; i--)
     {
         if (digits[i] == 0)
             floats_to_remove++;
@@ -80,7 +79,7 @@ void Number::clean()
     digits.erase(digits.end() - floats_to_remove, digits.end());
 
     int digits_to_remove = 0;
-    for (unsigned i = 0; i < float_point_i - 1; i++)
+    for (long int i = 0; i < float_point_i - 1; i++)
     {
         if (digits[i] == 0)
             digits_to_remove++;
@@ -89,24 +88,26 @@ void Number::clean()
     }
     digits.erase(digits.begin(), digits.begin() + digits_to_remove);
     float_point_i -= digits_to_remove;
+
+    // -0 => 0
+    if (digits.size() == 1 && digits[0] == 0)
+        sign = true;
 }
 void Number::remove_float_after(short int num)
 {
     if (float_length() > num)
-    {
         shift_digits_for(num - float_length());
-        float_point_i -= num - float_length();
-    }
 }
+
 string Number::printable_string()
 {
     remove_float_after();
     clean();
+
     return raw_string();
 }
 string Number::raw_string()
 {
-
     string str_num = "";
     for (unsigned i = 0; i < digits.size(); i++)
         str_num.append(to_string(digits[i]));
@@ -121,38 +122,33 @@ string Number::raw_string()
 Number sum(Number n1, Number n2)
 {
     // do subtraction if their signes arn't the same
-    if (n1.sign == false)
+    if (n1.sign != n2.sign)
     {
-        n1.sign = true;
-
-        if (n2.sign == false)
+        if (n1.sign == false)
         {
-            n2.sign = true;
-            Number res = sum(n2, n1);
-            res.sign = false;
-            return res;
+            n1.sign = true;
+            return subtract(n2, n1);
         }
         else
-            return subtract(n2, n1);
-    }
-    else if (n2.sign == false)
-    {
-        n2.sign = true;
-        return subtract(n1, n2);
+        {
+            n2.sign = true;
+            return subtract(n1, n2);
+        }
     }
 
     Number res;
     sync_num(n1, n2);
     sync_num(n1, res);
 
+    // add another zero digit for result of the summation (because that can overflow like 9+9 = 18)
     res.digits.insert(res.digits.begin(), 1, 0);
     res.float_point_i++;
 
-    int num_len = n1.digits.size();
-    short int carry = 0;
-    for (int i = num_len - 1; i >= 0; i--)
+    long int num_len = n1.digits.size();
+    long int carry = 0;
+    for (long int i = num_len - 1; i >= 0; i--)
     {
-        short int temp_sum = n1.digits[i] + n2.digits[i] + carry;
+        long int temp_sum = n1.digits[i] + n2.digits[i] + carry;
         res.digits[i + 1] = temp_sum % 10;
         carry = temp_sum / 10;
     }
@@ -163,22 +159,19 @@ Number sum(Number n1, Number n2)
 }
 Number subtract(Number n1, Number n2)
 {
-    Number res;
-
     // do summation if their signes aren't the same
-    if (n1.sign == false)
-    {
-        n1.sign = true;
-        res = sum(n1, n2);
-        res.sign = false;
-        return res;
-    }
-    else if (n2.sign == false)
+    if (n2.sign == false)
     {
         n2.sign = true;
         return sum(n1, n2);
     }
+    else if (n1.sign == false)
+    {
+        n2.sign = false;
+        return sum(n1, n2);
+    }
 
+    Number res;
     sync_num(n1, n2);
     sync_num(res, n2);
 
@@ -270,7 +263,7 @@ Number divide(Number dividend, Number divisor, bool is_int_div)
         divisor.shift_digits_for(dfl);
     else if (dfl < 0)
         dividend.shift_digits_for(-dfl);
-        
+
     dividend.float_point_i = dividend.digits.size();
     divisor.float_point_i = divisor.digits.size();
 
@@ -322,7 +315,6 @@ Number divide(Number dividend, Number divisor, bool is_int_div)
     res.sign = result_sign;
     return res;
 }
-// 13/4 => 3, 12/4 => 3 uses for small divisions that thier answers is between 0 & 10
 DivRes simple_divide(Number dividend, Number divisor)
 {
     Number qoutient = N_0;
@@ -422,16 +414,12 @@ void sync_int(Number &n1, Number &n2)
 
     if (dil > 0)
     {
-        for (unsigned i = 0; i < dil; i++)
-            n2.digits.insert(n2.digits.begin(), 1, 0);
-
+        n2.digits.insert(n2.digits.begin(), dil, 0);
         n2.float_point_i += dil;
     }
     else if (dil < 0)
     {
-        for (unsigned i = 0; i < -dil; i++)
-            n1.digits.insert(n1.digits.begin(), 1, 0);
-
+        n1.digits.insert(n1.digits.begin(), -dil, 0);
         n1.float_point_i += -dil;
     }
 }

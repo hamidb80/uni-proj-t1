@@ -66,6 +66,14 @@ void test_number()
             Number("30").printable_string(), "30");
 
         error_if_were_not_equal(
+            "-0",
+            Number("-0").printable_string(), "0");
+
+        error_if_were_not_equal(
+            "0",
+            Number("0").printable_string(), "0");
+
+        error_if_were_not_equal(
             "0546",
             Number("0546").printable_string(), "546");
 
@@ -78,10 +86,11 @@ void test_number()
             Number("0.11").printable_string(), "0.11");
 
         error_if_were_not_equal(
-            "012.46600",
-            Number("012.46600").printable_string(), "12.466");
+            "012.466001",
+            Number("012.466001").printable_string(), "12.466");
 
-        // shift_digits_for
+
+        // --- shift_digits_for
         Number num45("45");
         string old_num = num45.printable_string();
         num45.shift_digits_for(2);
@@ -100,7 +109,7 @@ void test_number()
             new_num_str + " shift for -2 indexes",
             num45.raw_string(), "45");
 
-        // remove_float_after
+        // --- remove_float_after
         Number num63("63");
         num63.remove_float_after(2);
 
@@ -114,7 +123,7 @@ void test_number()
 
         error_if_were_not_equal(
             "remove float after 2 for 63.1" + num63_1.printable_string(),
-            num63_1.printable_string(), "63.1");
+            num63_1.raw_string(), "63.1");
 
         // --------------------
         Number num2_4654("2.4654");
@@ -122,7 +131,7 @@ void test_number()
 
         error_if_were_not_equal(
             "remove float after 2 for 2.4654" + num2_4654.printable_string(),
-            num2_4654.printable_string(), "2.46");
+            num2_4654.raw_string(), "2.46");
     }
     { // comparation
 
@@ -699,91 +708,123 @@ void test_functions()
             "0.1");
     }
 
-    { // sin
-        error_if_were_not_equal(
-            "sin(1.57)",
-            are_approxiamtly_equal(
-                sin(Number("1.57")), N_1,
-                Number("0.01")),
-            true);
-
-        error_if_were_not_equal(
-            "sin(0.785)",
-            are_approxiamtly_equal(
-                sin(Number("0.785")), Number("0.7"),
-                Number("0.01")),
-            true);
-
-        error_if_were_not_equal(
-            "sin(2.355)",
-            are_approxiamtly_equal(
-                sin(Number("2.355")), Number("0.7"),
-                Number("0.01")),
-            true);
-
-        error_if_were_not_equal(
-            "sin(3.14)=> ",
-            are_approxiamtly_equal(
-                sin(Number("3.14")), N_0,
-                Number("0.05")),
-            true);
-
-        error_if_were_not_equal(
-            "sin(31.4)=> ",
-            are_approxiamtly_equal(
-                sin(Number("31.4")), N_0,
-                Number("0.05")),
-            true);
-
-        error_if_were_not_equal(
-            "sin(4.71)",
-            are_approxiamtly_equal(
-                sin(Number("4.71")), _N_1,
-                Number("0.01")),
-            true);
+    // TODO add test
+    { // radical
+        ;
     }
-    { // cos
-        error_if_were_not_equal(
-            "cos(1.57)",
-            are_approxiamtly_equal(
-                cos(Number("1.57")), N_0,
-                Number("0.01")),
-            true);
+    { // log, ln
+        ;
+    }
+    { // triangles
+        ;
 
-        error_if_were_not_equal(
-            "cos(0.785)",
-            are_approxiamtly_equal(
-                cos(Number("0.785")), Number("0.7"),
-                Number("0.01")),
-            true);
+        { // sin
+            error_if_were_not_equal(
+                "sin(1.57)",
+                are_approxiamtly_equal(
+                    sin(Number("1.57")), N_1,
+                    Number("0.01")),
+                true);
 
-        error_if_were_not_equal(
-            "cos(2.355)",
-            are_approxiamtly_equal(
-                cos(Number("2.355")), Number("-0.7"),
-                Number("0.01")),
-            true);
+            error_if_were_not_equal(
+                "sin(0.785)",
+                are_approxiamtly_equal(
+                    sin(Number("0.785")), Number("0.7"),
+                    Number("0.01")),
+                true);
 
-        error_if_were_not_equal(
-            "cos(3.14)",
-            are_approxiamtly_equal(
-                cos(Number("3.14")), _N_1,
-                Number("0.01")),
-            true);
+            error_if_were_not_equal(
+                "sin(2.355)",
+                are_approxiamtly_equal(
+                    sin(Number("2.355")), Number("0.7"),
+                    Number("0.01")),
+                true);
 
-        error_if_were_not_equal(
-            "cos(0)",
-            are_approxiamtly_equal(
-                cos(Number("0")), N_1,
-                Number("0.01")),
-            true);
+            error_if_were_not_equal(
+                "sin(3.14)=> ",
+                are_approxiamtly_equal(
+                    sin(Number("3.14")), N_0,
+                    Number("0.05")),
+                true);
 
-        error_if_were_not_equal(
-            "cos(4.71)",
-            are_approxiamtly_equal(
-                cos(Number("4.71")), N_0,
-                Number("0.01")),
-            true);
+            error_if_were_not_equal(
+                "sin(31.4)=> ",
+                are_approxiamtly_equal(
+                    sin(Number("31.4")), N_0,
+                    Number("0.05")),
+                true);
+
+            error_if_were_not_equal(
+                "sin(4.71)",
+                are_approxiamtly_equal(
+                    sin(Number("4.71")), _N_1,
+                    Number("0.01")),
+                true);
+        }
+        { // cos
+            error_if_were_not_equal(
+                "cos(1.57)",
+                are_approxiamtly_equal(
+                    cos(Number("1.57")), N_0,
+                    Number("0.01")),
+                true);
+
+            error_if_were_not_equal(
+                "cos(0.785)",
+                are_approxiamtly_equal(
+                    cos(Number("0.785")), Number("0.7"),
+                    Number("0.01")),
+                true);
+
+            error_if_were_not_equal(
+                "cos(2.355)",
+                are_approxiamtly_equal(
+                    cos(Number("2.355")), Number("-0.7"),
+                    Number("0.01")),
+                true);
+
+            error_if_were_not_equal(
+                "cos(3.14)",
+                are_approxiamtly_equal(
+                    cos(Number("3.14")), _N_1,
+                    Number("0.01")),
+                true);
+
+            error_if_were_not_equal(
+                "cos(0)",
+                are_approxiamtly_equal(
+                    cos(Number("0")), N_1,
+                    Number("0.01")),
+                true);
+
+            error_if_were_not_equal(
+                "cos(4.71)",
+                are_approxiamtly_equal(
+                    cos(Number("4.71")), N_0,
+                    Number("0.01")),
+                true);
+        }
+        {
+            // tan
+        } {
+            // cot
+        } {
+            // sec
+        } {
+            // csc
+        }
+    }
+    { // hyperbolic
+        ;
+        {
+            // sinh
+        } {
+            // cosh
+        } {
+            // tanh
+        } {
+            // coth
+        }
     }
 }
 void test_algebra()
