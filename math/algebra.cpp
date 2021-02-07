@@ -9,6 +9,7 @@ using namespace std;
 
 extern Number E, P, N_10;
 
+// "2,4" => {"2", "4"} | "2" => {"2"}
 vector<string> get_arguments(string inside_pars)
 {
     vector<string> res;
@@ -23,7 +24,7 @@ vector<string> get_arguments(string inside_pars)
 
         if (i == inside_pars.length() || depth == 0 && inside_pars[i] == ',')
         {
-            res.push_back(inside_pars.substr(last_cut, i - last_cut + 1));
+            res.push_back(inside_pars.substr(last_cut, i - last_cut));
             last_cut = i + 1;
         }
 
