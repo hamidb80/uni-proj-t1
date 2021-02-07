@@ -5,6 +5,7 @@
 using namespace std;
 
 const unsigned short int
+    KEEP_FLOAT_BEFORE = 10,
     FLOAT_CLEAR_AFTER = 5;
 
 class Number
@@ -14,13 +15,13 @@ class Number
 
     35.21 ->
         sign: 1
-        digits: {0,0,0,...,3,5,2,1}
-        float_point_i: digits.size() -2
+        digits: {3,5,2,1}
+        float_point_i: 2
 
     -68 ->
         sign: 0
-        digits: {0,0,0,...,6,8}
-        float_point_i: digits.size()
+        digits: {6,8}
+        float_point_i: 2
     */
 
 public:
@@ -32,7 +33,7 @@ public:
     Number();
     Number(string str_num);
 
-    // digits: 12 indexes: 2 => 1200, digits: 12 indexes: -1 => 1
+    // 12  shift digits for 2 => 1200,  12 shift digits for 1 => 1,
     void shift_digits_for(long int);
     void remove_float_after(short int num = FLOAT_CLEAR_AFTER);
 
@@ -45,31 +46,27 @@ public:
 };
 
 // --- operations
-Number sum(Number n1, Number n2);
-Number subtract(Number n1, Number n2);
-Number multiplicate(Number n1, Number n2);
+Number sum(Number, Number);
+Number subtract(Number, Number);
+Number multiplicate(Number, Number);
 Number divide(Number dividend, Number divisor, bool int_div = false);
-// 13/4 => 3, 12/4 => 3 uses for small divisions that thier answers is between 0 & 10
 struct DivRes
 {
     Number qoutient, reminder;
+    DivRes(Number _qoutient, Number _reminder) : qoutient(_qoutient), reminder(_reminder) {}
 };
-DivRes simple_divide(Number dividend, Number divisor);
+DivRes simple_divide(Number dividend, Number divisor); // 13/4 => 3, 12/4 => 3 uses for small divisions that thier answers is between 0 & 10
 
 // --- comparation
-bool is_greater(Number n1, Number n2);
-bool are_equal(Number n1, Number n2);
-bool is_smaller_equal(Number n1, Number n2);
-bool is_smaller(Number n1, Number n2);
-bool is_greater_equal(Number n1, Number n2);
+bool is_greater(Number, Number);
+bool are_equal(Number, Number);
+bool is_smaller_equal(Number, Number);
+bool is_smaller(Number, Number);
+bool is_greater_equal(Number, Number);
 
 // --- other functions
-// 0.1 , 54 => 0.1 , 54.0
-void sync_float_points(Number &n1, Number &n2);
-// 15 , 1 => 15 , 01
-void sync_int(Number &n1, Number &n2);
-// sync_float_points & sync_int
-void sync_num(Number &n1, Number &n2);
+void sync_float_points(Number &n1, Number &n2); // 0.1 , 54 => 0.1 , 54.0
+void sync_int(Number &n1, Number &n2);          // 15 , 1 => 15 , 01
+void sync_num(Number &n1, Number &n2);          // sync_float_points & sync_int
 
-// split digits from a number with a index range
-Number split_digits(Number n1, long int from, long int to);
+Number split_digits(Number n1, long int from, long int to); // split digits from a number with a index range

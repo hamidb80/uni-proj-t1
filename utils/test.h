@@ -1,7 +1,12 @@
 #pragma once
 #include <string>
+#include "../math/number.h"
+#include "../math/matrix.h"
 
 using namespace std;
 
-void error_if_were_not_equal(string description, bool val1, bool val2);
-void error_if_were_not_equal(string description, string val1, string val2);
+void error_if_were_not_equal(string, bool, bool);
+void error_if_were_not_equal(string, string, string);
+void error_if_were_not_equal(string, Number, string);
+void error_if_were_not_equal(string, Number, Number);
+void error_if_were_not_equal(string, Matrix, Matrix);

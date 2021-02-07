@@ -6,10 +6,11 @@
 #include "graph.h"
 #include "algebra.h"
 #include "number.h"
+#include "../utils/number.h"
 
 using namespace std;
 
-extern Number N_2, N_0;
+extern Number N_10, N_2, N_0;
 
 // init class methods
 Number Range::length()
@@ -78,9 +79,9 @@ void draw_graph(string expression, Range x_range, Number x_step, Range y_range, 
 
             if (is_match)
                 cout << '*';
-            else if (are_equal(y, N_0))
+            else if (are_approxiamtly_equal(y, N_0, subtract(y_step, divide(y_step, N_10))))
                 cout << '_';
-            else if (are_equal(x, N_0))
+            else if (are_approxiamtly_equal(x, N_0, subtract(x_step, divide(x_step, N_10))))
                 cout << '|';
             else
                 cout << ' ';

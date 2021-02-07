@@ -73,8 +73,7 @@ Number get_var(string var_name)
     else if (var_name == "p")
         return P;
 
-    // TODO make all errors like this
-    __throw_domain_error("the var is not exists");
+    throw string("the var is not exists");
 }
 Number calculate(char ope, Number n1, Number n2)
 {
@@ -93,18 +92,18 @@ Number calculate(char ope, Number n1, Number n2)
     else if (ope == '^')
         return pow(n1, n2);
 
-    throw "not matched";
+    throw string("not matched");
 }
 Number calculate(string ope, Number n1, Number n2)
 {
     if (ope == "stick")
         return Number(n1.printable_string() + n2.printable_string());
 
-    throw "not matched";
+    throw string("not matched");
 }
 Number calculate(string func_name, Number n1)
 {
-    if (func_name == "fact")
+    if (func_name == "fact" || func_name == "!")
         return fact(n1);
     if (func_name == "abs")
         return abs(n1);
@@ -135,7 +134,7 @@ Number calculate(string func_name, Number n1)
     else if (func_name == "coth")
         return coth(n1);
 
-    throw "not matched";
+    throw string("not matched");
 }
 
 unsigned short int get_operator_priority(char ope)
@@ -154,7 +153,7 @@ unsigned short int get_operator_priority(char ope)
     else if (ope == '^')
         return 3;
 
-    throw "not matched";
+    throw string("not matched");
 }
 
 NextAlgebraData get_next_algebra(string algebra, short int last_operator_priority, bool want_left_number)
@@ -162,7 +161,7 @@ NextAlgebraData get_next_algebra(string algebra, short int last_operator_priorit
     long int i = 0;
     unsigned int
         depth = 0, // depth of pars
-        pars = 0;  // how many pars exists in this expression (algebra)?
+        pars = 0;  // how many outer pars exists in this expression (algebra)?
 
     bool matched = false; // is any number matched so far?
     string funcname = "";
@@ -180,7 +179,7 @@ NextAlgebraData get_next_algebra(string algebra, short int last_operator_priorit
                 pars++;
 
             else if (depth < 0)
-                throw "depth error";
+                throw string("depth error");
         }
 
         else if (depth == 0)
@@ -217,7 +216,7 @@ NextAlgebraData get_next_algebra(string algebra, short int last_operator_priorit
                     }
 
                     else
-                        throw "err";
+                        throw string("err");
                 }
                 else
                 {
@@ -237,7 +236,7 @@ NextAlgebraData get_next_algebra(string algebra, short int last_operator_priorit
     }
 
     if (depth != 0)
-        throw "depth error";
+        throw string("depth error");
 
     bool is_function_call = (funcname != "" && pars == 1 && algebra[algebra.length() - 1] == ')'),
          is_var_call = (funcname != "" && algebra.substr(0, i) == funcname);

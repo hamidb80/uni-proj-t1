@@ -1,25 +1,25 @@
 #pragma once
 #include "number.h"
 
-Number ln(Number number);
+Number ln(Number);
 Number log(Number base, Number number);
 Number pow(Number base, Number num);
 Number mod(Number d1, Number divisor);
-Number fact(Number num);
-Number abs(Number num);
-Number floor(Number num);
-Number ceil(Number num);
+Number fact(Number);
+Number abs(Number);
+Number floor(Number);
+Number ceil(Number);
 Number radical(Number base, Number num);
 
-Number sin(Number num);
-Number cos(Number num);
-Number tan(Number num);
-Number cot(Number num);
-Number sec(Number num);
-Number csc(Number num);
+Number sin(Number);
+Number cos(Number);
+Number tan(Number);
+Number cot(Number);
+Number sec(Number);
+Number csc(Number);
 
 
-Number sinh(Number num);
-Number cosh(Number num);
-Number tanh(Number num);
-Number coth(Number num);
+Number sinh(Number);
+Number cosh(Number);
+Number tanh(Number);
+Number coth(Number);

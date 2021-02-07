@@ -11,8 +11,6 @@
 
 using namespace std;
 
-string TRINGLE_FUNCTIONS_BASE = "DEG"; // DEG, RAD, GRAD
-
 void show_help()
 {
     cout << endl
@@ -38,37 +36,25 @@ void show_help()
          << "multipication  *" << endl
          << "division       /" << endl
          << "power          ^" << endl
-         << "factorial      !" << endl
          << endl
 
          << ">> Functions <<" << endl
-         << "ln (natural log)  ln([number])" << endl
-         //  << "log               log([base], [number])" << endl
          << "absolute          abs([number])" << endl
          << "factorial         fact([number])" << endl
          << "ceil              ceil([number])" << endl
          << "floor             floor([number])" << endl
-         //  << "radic             radic(base, number)" << endl
 
          << "sin               sin([number])" << endl
          << "cos               cos([number])" << endl
-         << "sec               sec([number])" << endl
-         << "csc               csc([number])" << endl
          << "tan               tan([number])" << endl
          << "cot               cot([number])" << endl
+         << "sec               sec([number])" << endl
+         << "csc               csc([number])" << endl
+
          << "sinh              sinh([number])" << endl
          << "cosh              cosh([number])" << endl
          << "tanh              tanh([number])" << endl
          << "coth              coth([number])" << endl
-
-         << "arcsin            arcsin([number])" << endl
-         << "arccos            arccos([number])" << endl
-         << "arctan            arctan([number])" << endl
-         << "arccot            arccot([number])" << endl
-         << "arcsinh           arcsinh([number])" << endl
-         << "arccosh           arccosh([number])" << endl
-         << "arctanh           arctanh([number])" << endl
-         << "arccoth           arccoth([number])" << endl
          << endl;
 }
 
@@ -81,32 +67,16 @@ int main()
         short int option;
         cout
             << "What you want?" << endl
-            << "0. set base unit for triabgle functons "
-            << "[the current base is '" << TRINGLE_FUNCTIONS_BASE << "']" << endl
-
             << "1. free algebra" << endl
             << "2. matrix " << endl
-            << "3. unit tranform " << endl
-            << "4. graph " << endl
-            << "5. show help " << endl
+            << "3. graph " << endl
+            << "4. show help " << endl
             << "[any other number]. exit " << endl;
 
         cin >> option;
         cin.ignore();
 
-        if (option == 0)
-        {
-            // TODO: validate the input
-            cout << "available bases are: "
-                 << "DEG, RAD, GRAD" << endl;
-            cout << "the default base for triangle functions would be: " << endl;
-
-            string new_base;
-            cin >> new_base;
-
-            TRINGLE_FUNCTIONS_BASE = new_base;
-        }
-        else if (option == 1)
+        if (option == 1)
         {
             cout << "enter your algebra: " << endl
                  << ">  ";
@@ -121,7 +91,7 @@ int main()
             }
             catch (...)
             {
-                cout << "Error: this expression is not valid." << endl;
+                cout << "Error: the expression is not valid." << endl;
             }
         }
         else if (option == 2)
@@ -143,42 +113,31 @@ int main()
             Matrix m1 = get_matrix_from_stdin(),
                    result;
 
-            if (option >= 1 && option <= 3)
+            try
             {
-                cout << "enter matrix info:" << endl;
-                Matrix m2 = get_matrix_from_stdin();
+                if (option >= 1 && option <= 3)
+                {
+                    cout << "enter matrix info:" << endl;
+                    Matrix m2 = get_matrix_from_stdin();
 
-                if (option == 1)
-                    result = sum(m1, m2);
-                else if (option == 2)
-                    result = subtract(m1, m2);
-                else
-                    result = multiplicate(m1, m2);
+                    if (option == 1)
+                        result = sum(m1, m2);
+                    else if (option == 2)
+                        result = subtract(m1, m2);
+                    else
+                        result = multiplicate(m1, m2);
+                }
+                else if (option == 4)
+                    result = transpose(m1);
             }
-            else if (option == 4)
-                result = transpose(m1);
+            catch (string e)
+            {
+                cerr << e << '\n';
+            }
 
             show_matrix_in_stdout(result);
         }
         else if (option == 3)
-        {
-            string from_unit, to_unit,
-                from_value, to_value;
-
-            cout << "from unit: ";
-            cin >> from_unit;
-
-            cout << "to unit: ";
-            cin >> to_unit;
-
-            cout << "from value: ";
-            cin >> from_value;
-
-            Number
-                from_value_number(from_value),
-                to_value_number(to_value);
-        }
-        else if (option == 4)
         {
             cout << "enter your function: " << endl
                  << "y= ";
@@ -205,11 +164,10 @@ int main()
             cin >> y_step;
 
             draw_graph(line,
-                       Range(Number(x_start), Number(x_end)), Number(x_step),
-                       Range(Number(y_start), Number(y_end)), Number(y_step));
-            
+                       Range(get_answer(x_start), get_answer(x_end)), get_answer(x_step),
+                       Range(get_answer(y_start), get_answer(y_end)), get_answer(y_step));
         }
-        else if (option == 5)
+        else if (option == 4)
             show_help();
         else
             break;

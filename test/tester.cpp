@@ -60,6 +60,22 @@ void test_number()
             "float len of 30.123",
             Number("30.123").float_length(), 3);
 
+        { // clean
+            Number n1("0001.2300");
+            n1.clean();
+
+            error_if_were_not_equal(
+                "clean 0001.2300",
+                n1.raw_string(), "1.23");
+
+            Number n2("00000.23000");
+            n2.clean();
+
+            error_if_were_not_equal(
+                "clean 00000.23000",
+                n2.raw_string(), "0.23");
+        }
+
         // print
         error_if_were_not_equal(
             "30",
@@ -88,7 +104,6 @@ void test_number()
         error_if_were_not_equal(
             "012.466001",
             Number("012.466001").printable_string(), "12.466");
-
 
         // --- shift_digits_for
         Number num45("45");
@@ -262,7 +277,7 @@ void test_number()
     }
     { // sync
 
-        // float
+        // int
         Number num12("12"), num790("790");
         sync_int(num12, num790);
 
@@ -274,7 +289,7 @@ void test_number()
             "12 int sync 790: ",
             num790.raw_string(), "790");
 
-        // int
+        // float
         Number num197("197.41"), num7("7.0104");
         sync_float_points(num197, num7);
 
@@ -301,420 +316,412 @@ void test_number()
     { // summation
         error_if_were_not_equal(
             "991 + 999 ",
-            sum(Number("999"), Number("991")).printable_string(),
-            "1990");
+            sum(Number("999"), Number("991")), "1990");
 
         error_if_were_not_equal(
             "991 + 00",
-            sum(Number("991"), Number("00")).printable_string(),
-            "991");
+            sum(Number("991"), Number("00")), "991");
 
         error_if_were_not_equal(
             "999 + 999",
-            sum(Number("999"), Number("999")).printable_string(),
-            "1998");
+            sum(Number("999"), Number("999")), "1998");
 
         error_if_were_not_equal(
             "79.64 + 1.1",
-            sum(Number("79.64"), Number("1.1")).printable_string(),
-            "80.74");
+            sum(Number("79.64"), Number("1.1")), "80.74");
 
         error_if_were_not_equal(
             "5.400 + 5.11",
-            sum(Number("5.400"), Number("5.11")).printable_string(),
-            "10.51");
+            sum(Number("5.400"), Number("5.11")), "10.51");
 
         error_if_were_not_equal(
             "5 + -1",
-            sum(Number("5"), Number("-1")).printable_string(),
-            "4");
+            sum(Number("5"), Number("-1")), "4");
 
         error_if_were_not_equal(
             "-5 + -1",
-            sum(Number("-5"), Number("-1")).printable_string(),
+            sum(Number("-5"), Number("-1")),
             "-6");
 
         error_if_were_not_equal(
             "-5 + 1",
-            sum(Number("-5"), Number("1")).printable_string(),
+            sum(Number("-5"), Number("1")),
             "-4");
     }
     { // subtraction
         error_if_were_not_equal(
             "991 - 999",
-            subtract(Number("991"), Number("999")).printable_string(),
+            subtract(Number("991"), Number("999")),
             "-8");
 
         error_if_were_not_equal(
             "3.14-0.314",
-            subtract(Number("3.14"), Number("0.314")).printable_string(),
-            "2.826");
+            subtract(Number("3.14"), Number("0.314")), "2.826");
 
         error_if_were_not_equal(
             "999 - 991",
-            subtract(Number("999"), Number("991")).printable_string(),
-            "8");
+            subtract(Number("999"), Number("991")), "8");
 
         error_if_were_not_equal(
             "14.888 - 89.3",
-            subtract(Number("14.888"), Number("89.3")).printable_string(),
+            subtract(Number("14.888"), Number("89.3")),
             "-74.412");
 
         error_if_were_not_equal(
             "10 - 10",
-            subtract(Number("10"), Number("10")).printable_string(),
-            "0");
+            subtract(Number("10"), Number("10")), "0");
 
         error_if_were_not_equal(
             "1201 - 991",
-            subtract(Number("1201"), Number("991")).printable_string(),
-            "210");
+            subtract(Number("1201"), Number("991")), "210");
 
         error_if_were_not_equal(
             "79.64 - 1.1",
-            subtract(Number("79.64"), Number("1.1")).printable_string(),
-            "78.54");
+            subtract(Number("79.64"), Number("1.1")), "78.54");
 
         error_if_were_not_equal(
             "5 - -1",
-            subtract(Number("5"), Number("-1")).printable_string(),
-            "6");
+            subtract(Number("5"), Number("-1")), "6");
 
         error_if_were_not_equal(
             "-5 - -1",
-            subtract(Number("-5"), Number("-1")).printable_string(),
+            subtract(Number("-5"), Number("-1")),
             "-4");
 
         error_if_were_not_equal(
             "-5 - 1",
-            subtract(Number("-5"), Number("1")).printable_string(),
+            subtract(Number("-5"), Number("1")),
             "-6");
     }
     { // multipicataton
         error_if_were_not_equal(
             "24 * 67",
-            multiplicate(Number("24"), Number("67")).printable_string(),
-            "1608");
+            multiplicate(Number("24"), Number("67")), "1608");
 
         error_if_were_not_equal(
             "999 * 999",
-            multiplicate(Number("999"), Number("999")).printable_string(),
-            "998001");
+            multiplicate(Number("999"), Number("999")), "998001");
 
         error_if_were_not_equal(
             "79.64 * 79.64",
-            multiplicate(Number("79.64"), Number("79.64")).printable_string(),
-            "6342.5296");
+            multiplicate(Number("79.64"), Number("79.64")), "6342.5296");
 
         error_if_were_not_equal(
             "1.1 * 1.1",
-            multiplicate(Number("1.1"), Number("1.1")).printable_string(),
-            "1.21");
+            multiplicate(Number("1.1"), Number("1.1")), "1.21");
 
         error_if_were_not_equal(
             "79.64 * 1.1",
-            multiplicate(Number("79.64"), Number("1.1")).printable_string(),
-            "87.604");
+            multiplicate(Number("79.64"), Number("1.1")), "87.604");
 
         error_if_were_not_equal(
             "79.64 * 1",
-            multiplicate(Number("79.64"), Number("1")).printable_string(),
-            "79.64");
+            multiplicate(Number("79.64"), Number("1")), "79.64");
 
         error_if_were_not_equal(
             "46.300 * 0",
-            multiplicate(Number("46.300"), Number("0")).printable_string(),
-            "0");
+            multiplicate(Number("46.300"), Number("0")), "0");
 
         error_if_were_not_equal(
             "46.300 * 00",
-            multiplicate(Number("46.300"), Number("00")).printable_string(),
-            "0");
+            multiplicate(Number("46.300"), Number("00")), "0");
 
         error_if_were_not_equal(
             "1 * 4.5",
-            multiplicate(Number("1"), Number("4.5")).printable_string(),
-            "4.5");
+            multiplicate(Number("1"), Number("4.5")), "4.5");
 
         error_if_were_not_equal(
             "-2 * 3",
-            multiplicate(Number("-2"), Number("3")).printable_string(),
+            multiplicate(Number("-2"), Number("3")),
             "-6");
 
         error_if_were_not_equal(
             "2 * -3",
-            multiplicate(Number("2"), Number("-3")).printable_string(),
+            multiplicate(Number("2"), Number("-3")),
             "-6");
 
         error_if_were_not_equal(
             "-2 * -3",
-            multiplicate(Number("-2"), Number("-3")).printable_string(),
-            "6");
+            multiplicate(Number("-2"), Number("-3")), "6");
 
         error_if_were_not_equal(
             "17 * 0.1",
-            multiplicate(Number("17"), Number("0.1")).printable_string(),
-            "1.7");
+            multiplicate(Number("17"), Number("0.1")), "1.7");
     }
     { // division
         error_if_were_not_equal(
             "14/2",
-            divide(Number("14"), Number("2")).printable_string(),
-            "7");
+            divide(Number("14"), Number("2")), "7");
 
         error_if_were_not_equal(
             "14/10",
-            divide(Number("14"), Number("10")).printable_string(),
-            "1.4");
+            divide(Number("14"), Number("10")), "1.4");
 
         error_if_were_not_equal(
             "15/100",
-            divide(Number("15"), Number("100")).printable_string(),
-            "0.15");
+            divide(Number("15"), Number("100")), "0.15");
 
         error_if_were_not_equal(
             "8/2",
-            divide(Number("8"), Number("2")).printable_string(),
-            "4");
+            divide(Number("8"), Number("2")), "4");
 
         error_if_were_not_equal(
             "1864/2",
-            divide(Number("1864"), Number("2")).printable_string(),
-            "932");
+            divide(Number("1864"), Number("2")), "932");
 
         error_if_were_not_equal(
             "199/2",
-            divide(Number("199"), Number("2")).printable_string(),
-            "99.5");
+            divide(Number("199"), Number("2")), "99.5");
 
         error_if_were_not_equal(
             "3.14/0.314",
-            divide(Number("3.14"), Number("0.314")).printable_string(),
-            "10");
+            divide(Number("3.14"), Number("0.314")), "10");
 
         error_if_were_not_equal(
             "2000/2",
-            divide(Number("2000"), Number("2")).printable_string(),
-            "1000");
+            divide(Number("2000"), Number("2")), "1000");
 
         error_if_were_not_equal(
             "12/12",
-            divide(Number("12"), Number("12")).printable_string(),
-            "1");
+            divide(Number("12"), Number("12")), "1");
 
         error_if_were_not_equal(
             "99980001/9999",
-            divide(Number("99980001"), Number("9999")).printable_string(),
-            "9999");
+            divide(Number("99980001"), Number("9999")), "9999");
 
         error_if_were_not_equal(
             "749/7",
-            divide(Number("749"), Number("7")).printable_string(),
-            "107");
+            divide(Number("749"), Number("7")), "107");
 
         error_if_were_not_equal(
             "0.445/5",
-            divide(Number("0.445"), Number("5")).printable_string(),
-            "0.089");
+            divide(Number("0.445"), Number("5")), "0.089");
 
         error_if_were_not_equal(
             "0.455/0.5",
-            divide(Number("0.455"), Number("0.5")).printable_string(),
-            "0.91");
+            divide(Number("0.455"), Number("0.5")), "0.91");
 
         error_if_were_not_equal(
             "0.3/5",
-            divide(Number("0.3"), Number("5")).printable_string(),
-            "0.06");
+            divide(Number("0.3"), Number("5")), "0.06");
 
         error_if_were_not_equal(
             "11/7",
-            divide(Number("11"), Number("7")).printable_string(),
-            "1.57142");
+            divide(Number("11"), Number("7")), "1.57142");
 
         error_if_were_not_equal(
             "7/11",
-            divide(Number("7"), Number("11")).printable_string(),
-            "0.63636");
+            divide(Number("7"), Number("11")), "0.63636");
 
         error_if_were_not_equal(
             "10/3",
-            divide(Number("10"), Number("3")).printable_string(),
-            "3.33333");
+            divide(Number("10"), Number("3")), "3.33333");
 
         error_if_were_not_equal(
             "10/3",
-            divide(Number("10"), Number("3"), true).printable_string(),
-            "3");
+            divide(Number("10"), Number("3"), true), "3");
 
         error_if_were_not_equal(
             "2/3",
-            divide(Number("2"), Number("3"), true).printable_string(),
-            "0");
+            divide(Number("2"), Number("3"), true), "0");
     }
     { // mod
         error_if_were_not_equal(
             "10 mod 3",
-            mod(Number("10"), Number("3")).printable_string(),
-            "1");
+            mod(Number("10"), Number("3")), "1");
 
         error_if_were_not_equal(
             "3 mod 10",
-            mod(Number("3"), Number("10")).printable_string(),
-            "3");
+            mod(Number("3"), Number("10")), "3");
 
         error_if_were_not_equal(
             "3 mod 3",
-            mod(Number("3"), Number("3")).printable_string(),
-            "0");
+            mod(Number("3"), Number("3")), "0");
 
         error_if_were_not_equal(
             "3.3 mod 3",
-            mod(Number("3.3"), Number("3")).printable_string(),
-            "0.3");
+            mod(Number("3.3"), Number("3")), "0.3");
 
         error_if_were_not_equal(
             "6 mod 3.3",
-            mod(Number("6"), Number("3.3")).printable_string(),
-            "2.7");
+            mod(Number("6"), Number("3.3")), "2.7");
 
         error_if_were_not_equal(
             "3.6 mod 3.3",
-            mod(Number("3.6"), Number("3.3")).printable_string(),
-            "0.3");
+            mod(Number("3.6"), Number("3.3")), "0.3");
     }
 }
-void test_matrix() {}
+void test_matrix()
+{
+    {     // mult
+        { // test 1
+            Number t1[5][5] = {{Number("1"), Number("2")}, {Number("3"), Number("4")}},
+                   t2[5][5] = {{Number("5"), Number("6")}, {Number("7"), Number("8")}},
+                   t3[5][5] = {{Number("19"), Number("22")}, {Number("43"), Number("50")}};
+
+            Matrix m1(2, 2, t1),
+                m2(2, 2, t2),
+                ans(2, 2, t3),
+                m3 = multiplicate(m1, m2);
+
+            error_if_were_not_equal(m1.in_row_string() + "x" + m2.in_row_string(),
+                                    m3, ans);
+        }
+        { // test 2
+            Number t1[5][5] = {{Number("1"), Number("2"), Number("-3")}, {Number("0"), Number("4"), Number("2")}},
+                   t2[5][5] = {{Number("4"), Number("5")}, {Number("1"), Number("-1")}, {Number("2"), Number("3")}},
+                   t3[5][5] = {{Number("0"), Number("-6")}, {Number("8"), Number("2")}};
+
+            Matrix m1(2, 3, t1),
+                m2(3, 2, t2),
+                ans(2, 2, t3),
+                m3 = multiplicate(m1, m2);
+
+            error_if_were_not_equal(m1.in_row_string() + "x" + m2.in_row_string(),
+                                    m3, ans);
+        }
+    }
+    1;
+    { // sum
+        Number t1[5][5] = {{Number("1"), Number("2")}, {Number("3"), Number("4")}},
+               t2[5][5] = {{Number("5"), Number("6")}, {Number("7"), Number("8")}},
+               t3[5][5] = {{Number("6"), Number("8")}, {Number("10"), Number("12")}};
+
+        Matrix m1(2, 2, t1),
+            m2(2, 2, t2),
+            ans(2, 2, t3),
+            m3 = sum(m1, m2);
+
+        error_if_were_not_equal(m1.in_row_string() + "+" + m2.in_row_string(),
+                                m3, ans);
+    }
+    { // minus
+        Number t1[5][5] = {{Number("1"), Number("2")}, {Number("3"), Number("4")}},
+               t2[5][5] = {{Number("5"), Number("2")}, {Number("-7"), Number("2")}},
+               t3[5][5] = {{Number("-4"), Number("0")}, {Number("10"), Number("2")}};
+
+        Matrix m1(2, 2, t1),
+            m2(2, 2, t2),
+            ans(2, 2, t3),
+            m3 = subtract(m1, m2);
+
+        error_if_were_not_equal(m1.in_row_string() + "-" + m2.in_row_string(),
+                                m3, ans);
+    }
+
+    { // transpose
+        Number t1[5][5] = {{Number("1"), Number("2")}, {Number("3"), Number("4")}, {Number("5"), Number("6")}},
+               t2[5][5] = {{Number("1"), Number("3"), Number("5")}, {Number("2"), Number("4"), Number("6")}};
+
+        Matrix m1(3, 2, t1),
+            ans(2, 3, t2),
+            m2 = transpose(m1);
+
+        error_if_were_not_equal("transpose " + m1.in_row_string(),
+                                m2, ans);
+    }
+}
 void test_functions()
 {
     { // power
         error_if_were_not_equal(
             "8^5",
-            pow(Number("8"), Number("5")).printable_string(),
-            "32768");
+            pow(Number("8"), Number("5")), "32768");
 
         error_if_were_not_equal(
             "(-2)^5",
-            pow(Number("-2"), Number("5")).printable_string(),
+            pow(Number("-2"), Number("5")),
             "-32");
     }
     { // fact
         error_if_were_not_equal(
             "8!",
-            fact(Number("8")).printable_string(),
-            "40320");
+            fact(Number("8")), "40320");
     }
     { // floor
         error_if_were_not_equal(
             "floor -8",
-            abs(Number("-8")).printable_string(),
-            "8");
+            abs(Number("-8")), "8");
 
         error_if_were_not_equal(
             "floor 8",
-            abs(Number("8")).printable_string(),
-            "8");
+            abs(Number("8")), "8");
 
         error_if_were_not_equal(
             "floor 8.5",
-            floor(Number("8.5")).printable_string(),
-            "8");
+            floor(Number("8.5")), "8");
 
         error_if_were_not_equal(
             "floor 8",
-            floor(Number("8")).printable_string(),
-            "8");
+            floor(Number("8")), "8");
 
         error_if_were_not_equal(
             "floor -8.5",
-            floor(Number("-8.5")).printable_string(),
-            "-9");
+            floor(Number("-8.5")), "-9");
     }
     { // ceil
         error_if_were_not_equal(
             "ceil -9",
-            floor(Number("-9")).printable_string(),
-            "-9");
+            floor(Number("-9")), "-9");
 
         error_if_were_not_equal(
             "ceil 8.5",
-            ceil(Number("8.5")).printable_string(),
-            "9");
+            ceil(Number("8.5")), "9");
 
         error_if_were_not_equal(
             "ceil 8",
-            ceil(Number("8")).printable_string(),
-            "8");
+            ceil(Number("8")), "8");
 
         error_if_were_not_equal(
             "ceil -8.5",
-            ceil(Number("-8.5")).printable_string(),
-            "-8");
+            ceil(Number("-8.5")), "-8");
 
         error_if_were_not_equal(
             "ceil -9",
-            ceil(Number("-9")).printable_string(),
-            "-9");
+            ceil(Number("-9")), "-9");
     }
     { // mod
         error_if_were_not_equal(
             "10 mod 3",
-            mod(Number("10"), Number("3")).printable_string(),
-            "1");
+            mod(Number("10"), Number("3")), "1");
 
         error_if_were_not_equal(
             "2 mod 3",
-            mod(Number("2"), Number("3")).printable_string(),
-            "2");
+            mod(Number("2"), Number("3")), "2");
 
         error_if_were_not_equal(
             "999999999999999999 mod 2",
-            mod(Number("999999999999999999"), Number("2")).printable_string(),
-            "1");
+            mod(Number("999999999999999999"), Number("2")), "1");
 
         error_if_were_not_equal(
             "26 mod 26",
-            mod(Number("26"), Number("2")).printable_string(),
-            "0");
+            mod(Number("26"), Number("2")), "0");
 
         error_if_were_not_equal(
             "3.13 mod 1",
-            mod(Number("3.13"), Number("1")).printable_string(),
-            "0.13");
+            mod(Number("3.13"), Number("1")), "0.13");
 
         error_if_were_not_equal(
             "3.14 mod 3.141592",
-            mod(Number("3.14"), Number("3.141592")).printable_string(),
-            "3.14");
+            mod(Number("3.14"), Number("3.141592")), "3.14");
 
         error_if_were_not_equal(
             "31.45 mod 2.5",
-            mod(Number("31.45"), Number("2.5")).printable_string(),
-            "1.45");
+            mod(Number("31.45"), Number("2.5")), "1.45");
 
         error_if_were_not_equal(
             "31.4 mod 3.14",
-            mod(Number("31.4"), Number("3.14")).printable_string(),
-            "0");
+            mod(Number("31.4"), Number("3.14")), "0");
 
         error_if_were_not_equal(
             "4.71 mod 3.14",
-            mod(Number("4.71"), Number("3.14")).printable_string(),
-            "1.57");
+            mod(Number("4.71"), Number("3.14")), "1.57");
 
         error_if_were_not_equal(
             "10 mod 0.3",
-            mod(Number("10"), Number("0.3")).printable_string(),
-            "0.1");
+            mod(Number("10"), Number("0.3")), "0.1");
     }
 
-    // TODO add test
-    { // radical
-        ;
-    }
-    { // log, ln
-        ;
-    }
     { // triangles
         ;
 
@@ -760,6 +767,13 @@ void test_functions()
                     sin(Number("4.71")), _N_1,
                     Number("0.01")),
                 true);
+
+            error_if_were_not_equal(
+                "sin(0)",
+                are_approxiamtly_equal(
+                    sin(Number("0")), N_0,
+                    Number("0.001")),
+                true);
         }
         { // cos
             error_if_were_not_equal(
@@ -801,184 +815,141 @@ void test_functions()
                 "cos(4.71)",
                 are_approxiamtly_equal(
                     cos(Number("4.71")), N_0,
-                    Number("0.01")),
+                    Number("0.02")),
                 true);
         }
-        {
-            // tan
-        } {
-            // cot
-        } {
-            // sec
-        } {
-            // csc
-        }
     }
-    { // hyperbolic
-        ;
-        {
-            // sinh
-        } {
-            // cosh
-        } {
-            // tanh
-        } {
-            // coth
-        }
-    }
+
+    // hyperbolic: tested by a human & graph :)
 }
 void test_algebra()
 {
     { // get_next_algebra
         error_if_were_not_equal(
             "next algebra of (654)",
-            get_next_algebra("(654)", 4).value,
-            "654");
+            get_next_algebra("(654)", 4).value, "654");
 
         error_if_were_not_equal(
-            "next algebra of (6*1^(43+4)-12), 5",
+            "next algebra of (6*1^(43+4)-12), 4",
             get_next_algebra("(6*1^(43+4)-12)", 4).value,
             "6*1^(43+4)-12");
 
         error_if_were_not_equal(
             "next algebra of 6*1^(43+4)-12, 2",
-            get_next_algebra("6*1^(43+4)-12", 2).value,
-            "6");
+            get_next_algebra("6*1^(43+4)-12", 2).value, "6");
 
         error_if_were_not_equal(
-            "next algebra of 6*1^(43+4)-12, 5",
-            get_next_algebra("6*1^(43+4)-12", 4).value,
-            "6");
+            "next algebra of 6*1^(43+4)-12, 4",
+            get_next_algebra("6*1^(43+4)-12", 4).value, "6");
 
         error_if_were_not_equal(
             "next algebra of 6*1^(43+4)-12, 1",
-            get_next_algebra("6*1^(43+4)-12", 1).value,
-            "6*1^(43+4)");
+            get_next_algebra("6*1^(43+4)-12", 1).value, "6*1^(43+4)");
     }
     { // get_answer
 
         // basic sum/sub
         error_if_were_not_equal(
             "5+0.3",
-            get_answer("5+0.3").printable_string(),
-            "5.3");
+            get_answer("5+0.3"), "5.3");
 
         error_if_were_not_equal(
             "3-5",
-            get_answer("3-5").printable_string(),
-            "-2");
+            get_answer("3-5"), "-2");
 
         // operator priority
         error_if_were_not_equal(
             "34*1-5*4+1",
-            get_answer("34*1-5*4+1").printable_string(),
-            "15");
+            get_answer("34*1-5*4+1"), "15");
 
         error_if_were_not_equal(
             "9^3-1",
-            get_answer("9^3-1").printable_string(),
-            "728");
+            get_answer("9^3-1"), "728");
 
         error_if_were_not_equal(
             "1/2*2^3-5",
-            get_answer("1/2*2^3-5").printable_string(),
-            "-1");
+            get_answer("1/2*2^3-5"), "-1");
 
         // minus minus
         error_if_were_not_equal(
-            "-++4",
-            get_answer("-----4").printable_string(),
-            "-4");
+            "+-+4",
+            get_answer("+-+4"), "-4");
 
         error_if_were_not_equal(
             "-----4",
-            get_answer("-----4").printable_string(),
-            "-4");
+            get_answer("-----4"), "-4");
 
         error_if_were_not_equal(
             "------4",
-            get_answer("------4").printable_string(),
-            "4");
+            get_answer("------4"), "4");
 
         error_if_were_not_equal(
             "9^3--1",
-            get_answer("9^3--1").printable_string(),
-            "730");
+            get_answer("9^3--1"), "730");
 
         // pars
         error_if_were_not_equal(
             "6*(2+2)+1",
-            get_answer("6*(2+2)+1").printable_string(),
-            "25");
+            get_answer("6*(2+2)+1"), "25");
 
         error_if_were_not_equal(
             "1/2*2^(1+1)-5",
-            get_answer("1/2*2^(1+1)-5").printable_string(),
-            "-3");
+            get_answer("1/2*2^(1+1)-5"), "-3");
 
         // nested pars
         error_if_were_not_equal(
             "5*3+(7*2+3*(3.5*9)-(-3))/7",
-            get_answer("5*3+(7*2+3*(3.5*9)-(-3))/7").printable_string(),
-            "30.92857");
+            get_answer("5*3+(7*2+3*(3.5*9)-(-3))/7"), "30.92857");
 
         error_if_were_not_equal(
             "(((2)))*3-1",
-            get_answer("(((2)))*3-1").printable_string(),
-            "5");
+            get_answer("(((2)))*3-1"), "5");
 
         error_if_were_not_equal(
             "(-((2)))*3+1",
-            get_answer("(-((2)))*3+1").printable_string(),
-            "-5");
+            get_answer("(-((2)))*3+1"), "-5");
 
         error_if_were_not_equal(
             "(2)+(1)*(5)*(-3)-(-(-4))",
-            get_answer("(2)+(1)*(5)*(-3)-(-(-4))").printable_string(),
-            "-17");
+            get_answer("(2)+(1)*(5)*(-3)-(-(-4))"), "-17");
 
         error_if_were_not_equal(
             "((2)+(1))/(5)-((-3)-(-(-4)))",
-            get_answer("((2)+(1))/(5)-((-3)-(-(-4)))").printable_string(),
-            "7.6");
+            get_answer("((2)+(1))/(5)-((-3)-(-(-4)))"), "7.6");
 
         // function call
         error_if_were_not_equal(
             "1+sin(1.57)*3^2",
-            get_answer("1+sin(1.57)*3^2").printable_string(),
-            "10");
+            are_approxiamtly_equal(
+                get_answer("1+sin(1.57)*3^2"), Number("10"),
+                Number("0.01")),
+            true);
 
         error_if_were_not_equal(
             "fact(5)/5+1",
-            get_answer("(fact(5)/5+1)^2").printable_string(),
-            "625");
+            get_answer("(fact(5)/5+1)^2"), "625");
 
         // nested function call
         error_if_were_not_equal(
             "fact(fact(abs(-3)-1))",
-            get_answer("fact(fact(abs(-3)-1))").printable_string(),
-            "2");
+            get_answer("fact(fact(abs(-3)-1))"), "2");
 
         error_if_were_not_equal(
             "fact(0)+fact(1)*fact(2)/fact(3)",
-            get_answer("fact(0)+fact(1)*fact(2)/fact(3)").printable_string(),
-            "1.33333");
+            get_answer("fact(0)+fact(1)*fact(2)/fact(3)"), "1.33333");
 
         // varible call
         error_if_were_not_equal(
             "e",
-            get_answer("e").printable_string(),
-            E.printable_string());
+            get_answer("e"), E);
 
         error_if_were_not_equal(
             "e+p",
-            get_answer("e+p").printable_string(),
-            sum(P, E).printable_string());
+            get_answer("e+p"), sum(P, E));
 
         error_if_were_not_equal(
             "1+e*p",
-            get_answer("1+e*p").printable_string(),
-            sum(N_1, multiplicate(P, E)).printable_string());
+            get_answer("1+e*p"), sum(N_1, multiplicate(P, E)));
 
         error_if_were_not_equal(
             "5*3+(7*2+3*(3.5*9)-(-3))/7+p*e",
@@ -990,16 +961,12 @@ void test_algebra()
 }
 void test_graph()
 {
-    // Range y_r(Number("-3"), Number("3")),
-    //     x_r(Number("-3"), Number("3"));
+    Range y_r(get_answer("-3"), get_answer("+3")),
+        x_r(get_answer("-3"), get_answer("3"));
 
-    // draw_graph("x", x_r, Number("1"), y_r, Number("1"));
-
-    Range y_r(Number("-2"), Number("2")),
-        x_r(Number("-2"), Number("6"));
-
-    draw_graph("abs(x-1)", x_r, Number("0.5"), y_r, Number("0.5"));
+    draw_graph("coth(x)", x_r, get_answer("0.1"), y_r, get_answer("0.1"));
 }
+
 void test_entire_app()
 {
     cout << "--- Fails ---"

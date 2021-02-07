@@ -1,16 +1,18 @@
 #include "number.h"
 #include "functions.h"
 
-extern Number P, P2, E, N_0, N_1, _N_1, N_2, N_10;
+#include <iostream>
+
+extern Number P, _P2, P2, E, N_0, N_1, _N_1, N_2, N_10;
 const short int
-    max_hyperbolic_s = 5,
-    max_triangle_s = 5;
+    max_hyperbolic_s = 10,
+    max_triangle_s = 10;
 
 Number pow(Number base, Number num)
 {
     num.clean();
     if (num.float_length() != 0)
-        throw "power function: number must be integer";
+        throw string("power function: number must be integer");
 
     Number res = N_1, i = N_1;
 
@@ -23,7 +25,7 @@ Number fact(Number num)
 {
     num.clean();
     if (num.float_length() != 0)
-        throw "fact function: value must be an integer";
+        throw string("fact function: value must be an integer");
 
     Number res = N_1, i = num;
 
@@ -92,40 +94,11 @@ Number log(Number base, Number num)
 
 Number sin(Number rad)
 {
-    rad = mod(rad, P2);
-    bool sign = !is_greater(rad, P);
-    rad = mod(rad, P);
-
-    Number _sum;
-    for (short int i = 0; i < max_triangle_s; i++)
-    {
-        Number
-            inum(to_string(i)),
-            n2_1 = sum(multiplicate(N_2, inum), N_1);
-
-        _sum = sum(_sum,
-                   multiplicate(
-                       divide(
-                           pow(_N_1, inum), fact(n2_1)),
-                       pow(rad, n2_1)));
-    }
-
-    _sum.sign = sign;
-    if (is_greater(abs(_sum), N_1))
-    {
-        bool sign = _sum.sign;
-        _sum = N_1;
-        _sum.sign = sign;
-    }
-
-    return _sum;
+    return cos(subtract(rad, _P2));
 }
 Number cos(Number rad)
 {
     rad = mod(rad, P2);
-    // TODO:
-    // bool sign = !is_greater(rad, P);
-    // rad = mod(rad, P);
 
     Number _sum;
     for (short int i = 0; i < max_triangle_s; i++)
@@ -155,7 +128,7 @@ Number tan(Number rad)
 }
 Number cot(Number rad)
 {
-    return divide(cos(rad), sin(rad));
+    return divide(cos(rad),sin(rad));
 }
 Number sec(Number rad)
 {
@@ -179,7 +152,6 @@ Number sinh(Number x)
         _sum = sum(_sum, divide(
                              pow(x, n_2_1), fact(n_2_1)));
     }
-
     return _sum;
 }
 Number cosh(Number x)
@@ -195,7 +167,6 @@ Number cosh(Number x)
         _sum = sum(_sum, divide(
                              pow(x, n_2), fact(n_2)));
     }
-
     return (is_greater(N_1, _sum) ? N_1 : _sum);
 }
 Number tanh(Number num)
@@ -208,7 +179,6 @@ Number tanh(Number num)
         res = N_1;
         res.sign = sign;
     }
-
     return res;
 }
 Number coth(Number num)

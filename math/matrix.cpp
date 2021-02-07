@@ -9,10 +9,6 @@ using namespace std;
 Matrix::Matrix()
 {
     rows = columns = 0;
-
-    for (int y = 0; y < rows; y++)
-        for (int x = 0; x < columns; x++)
-            table[y][x] = Number("0");
 }
 Matrix::Matrix(int _rows, int _columns, Number _table[MAX_ROWS][MAX_COLUMNS])
 {
@@ -24,10 +20,31 @@ Matrix::Matrix(int _rows, int _columns, Number _table[MAX_ROWS][MAX_COLUMNS])
             table[y][x] = _table[y][x];
 }
 
+string Matrix::in_row_string()
+{
+    string res;
+    for (int y = 0; y < rows; y++)
+    {
+        res += "[";
+        for (int x = 0; x < columns; x++)
+        {
+            if (x != 0)
+                res += ",";
+            res += table[y][x].printable_string();
+        }
+        res += "]";
+    }
+
+    return res;
+}
+
 // operations
 Matrix sum_sub(Matrix m1, Matrix m2, bool is_sum)
 {
     Matrix mat3;
+
+    if (m1.rows != m2.rows || m2.columns != m1.columns)
+        throw string("rows & coloumn of matrixes must be the same");
 
     // proc mat3
     for (int y = 0; y < m1.rows; y++)
@@ -53,6 +70,9 @@ Matrix subtract(Matrix m1, Matrix m2)
 }
 Matrix multiplicate(Matrix m1, Matrix m2)
 {
+    if (m1.columns != m2.rows)
+        throw string("cannot multipicate matrixes with size " + to_string(m1.rows) + "x" + to_string(m1.columns) + " with " + to_string(m2.rows) + "x" + to_string(m2.columns));
+
     Matrix mat3;
 
     // proc mat3
@@ -87,6 +107,7 @@ Matrix transpose(Matrix m)
     return res;
 }
 
+// utilities
 Matrix get_matrix_from_stdin()
 {
     short int rows, columns;
