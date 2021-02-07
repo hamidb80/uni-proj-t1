@@ -43,6 +43,9 @@ void show_help()
          << "factorial         fact([number])" << endl
          << "ceil              ceil([number])" << endl
          << "floor             floor([number])" << endl
+         << "ln                ln([number])" << endl
+         << "log               log([base], [number])" << endl
+         << "log10             log([number])" << endl
 
          << "sin               sin([number])" << endl
          << "cos               cos([number])" << endl

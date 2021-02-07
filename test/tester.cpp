@@ -977,7 +977,7 @@ void test_entire_app()
     test_functions();
     test_algebra();
 
-    test_graph();
+    // test_graph();
 
     cout << "\n\n --- APP TESTED ---"
          << "\n\n";

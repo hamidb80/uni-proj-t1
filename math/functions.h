@@ -9,7 +9,6 @@ Number fact(Number);
 Number abs(Number);
 Number floor(Number);
 Number ceil(Number);
-Number radical(Number base, Number num);
 
 Number sin(Number);
 Number cos(Number);

@@ -70,15 +70,10 @@ Number mod(Number dividend, Number divisor)
                                   divisor));
 }
 
-Number radical(Number base, Number num)
-{
-    return base;
-}
 Number ln(Number n)
 {
     Number _sum, top = divide(subtract(n, N_1), sum(n, N_1));
 
-    // TODO increase max
     for (int i = 1; i < 20; i += 2)
     {
         Number inum(to_string(i));

@@ -7,7 +7,7 @@
 
 using namespace std;
 
-extern Number E, P;
+extern Number E, P, N_10;
 
 vector<string> get_arguments(string inside_pars)
 {
@@ -94,9 +94,12 @@ Number calculate(char ope, Number n1, Number n2)
 
     throw string("not matched");
 }
-Number calculate(string ope, Number n1, Number n2)
+Number calculate(string func_name, Number n1, Number n2)
 {
-    if (ope == "stick")
+    if (func_name == "log")
+        return log(n1, n2);
+
+    else if (func_name == "stick")
         return Number(n1.printable_string() + n2.printable_string());
 
     throw string("not matched");
@@ -111,6 +114,11 @@ Number calculate(string func_name, Number n1)
         return floor(n1);
     else if (func_name == "ceil")
         return ceil(n1);
+
+    else if (func_name == "ln")
+        return ln(n1);
+    else if (func_name == "log")
+        return log(N_10, n1);
 
     else if (func_name == "sin")
         return sin(n1);
